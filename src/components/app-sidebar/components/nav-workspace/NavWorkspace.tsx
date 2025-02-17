@@ -4,7 +4,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/utils/string";
+import { capitalize, getInitials } from "@/utils/string";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 const NavWorkspace = () => {
@@ -21,13 +21,13 @@ const NavWorkspace = () => {
         >
           <Avatar className="rounded-lg bg-primary size-9">
             <AvatarImage src={logoURL} alt={name} className="rounded-none" />
-            <AvatarFallback className="text-[15px] bg-transparent rounded-none text-sidebar-primary-foreground">
+            <AvatarFallback className="text-[12px] bg-transparent rounded-none text-sidebar-primary-foreground">
               {getInitials(name)}
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight ml-1">
             <span className="truncate text-[13px] font-semibold">{name}</span>
-            <span className="truncate text-xs">{plan}</span>
+            <span className="truncate text-xs">{capitalize(plan)}</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

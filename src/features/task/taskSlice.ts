@@ -8,6 +8,7 @@ const persistedTasks = JSON.parse(persistedTasksString || '[]');
 const initialState: TaskState = {
   tasks: persistedTasks,
   filter: '',
+  groupBy: 'priority',
   currentPage: 1,
   pageSize: 10,
 }
@@ -40,13 +41,16 @@ const taskSlice = createSlice({
     },
     setSort: (state, action) => {
       state.sortColumn = action.payload.column;
-      state.sortDirection = action.payload.direction;
+      state.sortOrder = action.payload.direction;
     },
     setPage: (state, action) => {
       state.currentPage = action.payload;
     },
     setPageSize: (state, action) => {
       state.pageSize = action.payload;
+    },
+    setGroupBy: (state, action) => {
+      state.groupBy = action.payload;
     },
   },
 });

@@ -6,9 +6,9 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      {/* <SidebarInset className="w-[calc(100%-var(--sidebar-width))]">
+      <SidebarInset className="w-[calc(100%-var(--sidebar-width))]">
         <Outlet />
-      </SidebarInset> */}
+      </SidebarInset>
     </SidebarProvider>
   );
 };
