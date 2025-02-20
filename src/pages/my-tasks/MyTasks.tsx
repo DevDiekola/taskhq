@@ -4,7 +4,6 @@ import { ViewID } from "./components/navbar/models/navbarModel";
 import TableView from "./components/table-view/TableView";
 import KanbanView from "./components/kanban-view/KanbanView";
 import Navbar from "./components/navbar/Navbar";
-import CalendarView from "./components/calendar-view/CalendarView";
 
 const MyTasks = () => {
   const { search } = useLocation();
@@ -23,7 +22,6 @@ const MyTasks = () => {
   const viewPages: Record<ViewID, JSX.Element> = {
     table: <TableView />,
     kanban: <KanbanView />,
-    calendar: <CalendarView />,
   };
 
   return (
