@@ -16,7 +16,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TaskPriority, TaskStatus } from "@/features/task/taskModel";
+import {
+  TaskPayload,
+  Task,
+  TaskPriority,
+  TaskStatus,
+} from "@/features/task/taskModel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -32,8 +37,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
 import { snakeCaseToTitleCase } from "@/utils/string";
-import { useDispatch } from "react-redux";
-import { createTask } from "@/features/task/taskSlice";
 
 const taskSchema = z.object({
   title: z.string().min(1).max(100),
@@ -43,45 +46,48 @@ type TaskSchema = z.infer<typeof taskSchema>;
 
 type Props = {
   isOpen: boolean;
-  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  status?: TaskStatus;
-  priority?: TaskPriority;
+  task?: Task;
+  defaultStatus?: TaskStatus;
+  defaultPriority?: TaskPriority;
+  onSubmit: (taskPayload: TaskPayload) => void;
+  onClose: () => void;
 };
 
-const CreateTaskModal: React.FC<Props> = ({
+const CreateUpdateTaskModal: React.FC<Props> = ({
   isOpen,
-  setIsOpen,
-  status,
-  priority,
+  task,
+  defaultPriority,
+  defaultStatus = "not_started",
+  onSubmit,
+  onClose,
 }) => {
   const form = useForm<TaskSchema>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      title: "",
+      title: task?.title ?? "",
     },
   });
 
-  const [selectedStatus, setSelectedStatus] = React.useState(status);
-  const [selectedPriority, setSelectedPriority] = React.useState(priority);
+  const [selectedStatus, setSelectedStatus] = React.useState(
+    task?.status ?? defaultStatus
+  );
+  const [selectedPriority, setSelectedPriority] = React.useState(
+    task?.priority ?? defaultPriority
+  );
 
-  const dispatch = useDispatch();
+  const handleSubmit = (formData: TaskSchema) => {
+    const taskPayload: TaskPayload = {
+      id: task?.id,
+      title: formData.title,
+      status: selectedStatus,
+      priority: selectedPriority,
+    };
 
-  const handleSubmit = () => {
-    dispatch(
-      createTask({
-        title: form.getValues().title,
-        status: selectedStatus,
-        priority: selectedPriority,
-      })
-    );
-
-    if (setIsOpen) {
-      setIsOpen(false);
-    }
+    onSubmit(taskPayload);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => setIsOpen && setIsOpen(open)}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="w-[90%] md:w-[700px]">
         <Form {...form}>
           <form
@@ -90,7 +96,7 @@ const CreateTaskModal: React.FC<Props> = ({
           >
             <DialogHeader>
               <DialogTitle className="text-[20px] font-medium">
-                Create new task
+                {task?.id ? "Update task" : "Create new task"}
               </DialogTitle>
               <DialogDescription>
                 Get things done, one task at a time!
@@ -173,4 +179,4 @@ const CreateTaskModal: React.FC<Props> = ({
   );
 };
 
-export default CreateTaskModal;
+export default CreateUpdateTaskModal;

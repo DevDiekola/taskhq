@@ -8,7 +8,7 @@ export const TABLE_VIEW_LOCAL_STORAGE_KEY = "table-view";
 export const KANBAN_VIEW_LOCAL_STORAGE_KEY = "kanban-view";
 
 export const TASK_STATUSES: TaskStatus[] = ["not_started", "in_progress", "completed"];
-export const TASK_PRIORITIES: TaskPriority[] = ["none", "low", "medium", "high", "urgent"];
+export const TASK_PRIORITIES: TaskPriority[] = ["low", "medium", "high", "urgent"];
 
 export const MOCK_TASKS: Task[] = [
   {
@@ -21,7 +21,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 2,
     "title": "Fix login page bug",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 3,
@@ -69,7 +69,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 10,
     "title": "Prepare monthly report",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 11,
@@ -93,7 +93,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 14,
     "title": "Debug performance issues",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 15,
@@ -147,7 +147,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 23,
     "title": "Configure analytics tracking",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 24,
@@ -159,13 +159,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 25,
     "title": "Fix mobile responsiveness issues",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 26,
     "title": "Improve error handling",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 27,
@@ -189,7 +189,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 30,
     "title": "Write blog post on best practices",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 31,
@@ -213,7 +213,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 34,
     "title": "Update security policies",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 35,
@@ -225,13 +225,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 36,
     "title": "Fix broken links in footer",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 37,
     "title": "Set up automated email responses",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 38,
@@ -255,7 +255,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 41,
     "title": "Write post-mortem for outage",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 42,
@@ -291,13 +291,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 47,
     "title": "Deploy new microservice",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 48,
     "title": "Fix UI inconsistencies",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 49,
@@ -411,13 +411,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 67,
     "title": "Fix timezone issues",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 68,
     "title": "Add 2FA authentication",
     "status": "not_started",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 69,
@@ -435,7 +435,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 71,
     "title": "Update terms of service",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 72,
@@ -489,7 +489,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 80,
     "title": "Fix API CORS issues",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 81,
@@ -501,7 +501,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 82,
     "title": "Update user avatars",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 83,
@@ -531,7 +531,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 87,
     "title": "Improve site speed",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 88,
@@ -579,7 +579,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 95,
     "title": "Investigate 500 errors",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 96,
@@ -591,13 +591,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 97,
     "title": "Review legal compliance",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 98,
     "title": "Write changelog updates",
     "status": "completed",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 99,
@@ -681,7 +681,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 112,
     "title": "Improve logging strategy",
     "status": "in_progress",
-    "priority": "none"
+    "priority": "low"
   },
   {
     "id": 113,

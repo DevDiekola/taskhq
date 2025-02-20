@@ -92,7 +92,7 @@ const Paginator: React.FC<PaginationProps> = ({
           variant="outline"
           size="sm"
           onClick={handleNext}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || totalPages === 0}
         >
           Next
         </Button>

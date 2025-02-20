@@ -23,7 +23,7 @@ const Navbar = () => {
 
   const viewIDParams = queryParams.get("view");
 
-  const validView = views.find((v) => v.id === viewIDParams) !== undefined;
+  const validView = views.findIndex((v) => v.id === viewIDParams) !== -1;
 
   const activeViewID: ViewID = validView ? (viewIDParams as ViewID) : "table";
 
@@ -85,7 +85,7 @@ const Navbar = () => {
             <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
               <GroupIcon size={13} className="mb-1" />
               <span className="font-medium capitalize">
-                Group By: {groupBy}
+                Group By{groupBy ? `: ${groupBy}` : ""}
               </span>
             </div>
           </DropdownMenuTrigger>

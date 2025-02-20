@@ -7,43 +7,70 @@ import TaskTable from "./components/task-table/TaskTable";
 const TableView = () => {
   const {
     tasks: allTasks,
-    tableView: { groupBy },
+    tableView: { groupBy, sortColumn, sortOrder },
   } = useAppSelector((state) => state.taskState);
 
   const [taskGroups, setTaskGroups] = useState<TaskGroup[]>([]);
 
   useEffect(() => {
-    let taskGroups: TaskGroup[] = [];
+    let newTaskGroups: TaskGroup[] = [];
 
     if (groupBy === "priority") {
-      taskGroups = TASK_PRIORITIES.map((priority, index) => ({
+      newTaskGroups = TASK_PRIORITIES.map((priority, index) => ({
         id: index + 1,
-        title: priority,
+        name: priority,
         tasks: allTasks.filter((t) => t.priority === priority),
       }));
     } else if (groupBy === "status") {
-      taskGroups = TASK_STATUSES.map((status, index) => ({
+      newTaskGroups = TASK_STATUSES.map((status, index) => ({
         id: index + 1,
-        title: status,
+        name: status,
         tasks: allTasks.filter((t) => t.status === status),
       }));
     } else {
-      taskGroups = [
+      newTaskGroups = [
         {
           id: 1,
-          title: "All tasks",
+          name: "All tasks",
           tasks: allTasks,
         },
       ];
     }
 
-    setTaskGroups(taskGroups);
+    setTaskGroups(newTaskGroups);
   }, [allTasks, groupBy]);
+
+  useEffect(() => {
+    if (!sortColumn || !sortOrder) {
+      return;
+    }
+
+    setTaskGroups((prevTaskGroups) => {
+      return prevTaskGroups.map((group) => {
+        return {
+          ...group,
+          tasks: [...group.tasks].sort((a, b) => {
+            if (sortOrder === "asc") {
+              return a[sortColumn]! < b[sortColumn]! ? -1 : 1;
+            } else {
+              return a[sortColumn]! > b[sortColumn]! ? -1 : 1;
+            }
+          }),
+        };
+      });
+    });
+  }, [sortColumn, sortOrder]);
 
   return (
     <div className="flex flex-col gap-9 p-4 h-[calc(100dvh-100px)] overflow-y-auto">
       {taskGroups.map((group) => (
-        <TaskTable key={group.id} group={group} groupBy={groupBy} />
+        <TaskTable
+          key={group.id}
+          group={group}
+          groupBy={groupBy}
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+        />
       ))}
     </div>
   );
