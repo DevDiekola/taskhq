@@ -1,5 +1,6 @@
 import { TableHead } from "@/components/ui/table";
 import { ViewSortColumn, ViewSortOrder } from "@/features/task/taskModel";
+import { toTitleCase } from "@/utils/string";
 import { LucideArrowDownAZ, LucideArrowUpZA } from "lucide-react";
 
 type Prop = {
@@ -18,8 +19,8 @@ const TaskTableHead: React.FC<Prop> = ({
   return (
     <TableHead onClick={onClick}>
       <div className="w-full flex justify-between items-center cursor-pointer">
-        <span className="capitalize">{column}</span>
-        {sortOrder === "desc" ? (
+        <span>{toTitleCase(column)}</span>
+        {sortColumn === column && sortOrder === "desc" ? (
           <LucideArrowUpZA
             size={17}
             className={

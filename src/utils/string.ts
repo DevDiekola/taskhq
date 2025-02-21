@@ -16,7 +16,7 @@ export const getInitials = (str: string) => {
     return str.charAt(0);
 }
 
-export const snakeCaseToTitleCase = (str: string) => {
+export const toTitleCase = (str: string) => {
     return str
     .split('_')
     .map(word => capitalize(word))

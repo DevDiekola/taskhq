@@ -1,16 +1,38 @@
 import { TaskStatus, TaskPriority, Task, ViewGroupBy } from "@/features/task/taskModel";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 export const GROUP_BY_STATUS: ViewGroupBy = "status";
 export const GROUP_BY_PRIORITY: ViewGroupBy = "priority";
+
+export const TASK_SLICE_NAME = "task";
 
 export const TASK_LOCAL_STORAGE_KEY = "tasks";
 export const TABLE_VIEW_LOCAL_STORAGE_KEY = "table-view";
 export const KANBAN_VIEW_LOCAL_STORAGE_KEY = "kanban-view";
 
-export const TASK_STATUSES: TaskStatus[] = ["not_started", "in_progress", "completed"];
-export const TASK_PRIORITIES: TaskPriority[] = ["low", "medium", "high", "urgent"];
+export const TASK_STATUSES: ReadonlyArray<TaskStatus> = ["not_started", "in_progress", "completed"];
+export const TASK_PRIORITIES: ReadonlyArray<TaskPriority> = ["none", "low", "medium", "high", "urgent"];
 
-export const MOCK_TASKS: Task[] = [
+export const VIEW_GROUP_BY: ReadonlyArray<ViewGroupBy> = ["status", "priority"];
+
+export const STATUS_CLASS_NAMES: Readonly<Record<TaskStatus, { background: string; foreground: string }>> = {
+  not_started: { background: 'bg-gray-200', foreground: 'text-gray-800' },
+  in_progress: { background: 'bg-blue-100', foreground: 'text-blue-800' },
+  completed: { background: 'bg-green-100', foreground: 'text-green-800' },
+};
+
+export const PRIORITY_CLASS_NAMES: Readonly<Record<TaskPriority, { background: string; foreground: string }>> = {
+  none: { background: 'bg-gray-200', foreground: 'text-gray-800' },
+  low: { background: 'bg-green-100', foreground: 'text-green-800' },
+  medium: { background: 'bg-blue-100', foreground: 'text-blue-800' },
+  high: { background: 'bg-orange-100', foreground: 'text-orange-800' },
+  urgent: { background: 'bg-red-100', foreground: 'text-red-800' },
+};
+
+export const UNDO_TASK_ACTION: PayloadAction<string> = {type: "UNDO", payload: TASK_SLICE_NAME}
+export const REDO_TASK_ACTION: PayloadAction<string> = {type: "REDO", payload: TASK_SLICE_NAME}
+
+export const MOCK_TASKS: ReadonlyArray<Task> = [
   {
     "id": 1,
     "title": "Write project proposal",
@@ -21,7 +43,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 2,
     "title": "Fix login page bug",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 3,
@@ -69,7 +91,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 10,
     "title": "Prepare monthly report",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 11,
@@ -93,7 +115,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 14,
     "title": "Debug performance issues",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 15,
@@ -147,7 +169,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 23,
     "title": "Configure analytics tracking",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 24,
@@ -159,13 +181,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 25,
     "title": "Fix mobile responsiveness issues",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 26,
     "title": "Improve error handling",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 27,
@@ -189,7 +211,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 30,
     "title": "Write blog post on best practices",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 31,
@@ -213,7 +235,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 34,
     "title": "Update security policies",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 35,
@@ -225,13 +247,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 36,
     "title": "Fix broken links in footer",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 37,
     "title": "Set up automated email responses",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 38,
@@ -255,7 +277,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 41,
     "title": "Write post-mortem for outage",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 42,
@@ -291,13 +313,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 47,
     "title": "Deploy new microservice",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 48,
     "title": "Fix UI inconsistencies",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 49,
@@ -411,13 +433,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 67,
     "title": "Fix timezone issues",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 68,
     "title": "Add 2FA authentication",
     "status": "not_started",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 69,
@@ -435,7 +457,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 71,
     "title": "Update terms of service",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 72,
@@ -489,7 +511,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 80,
     "title": "Fix API CORS issues",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 81,
@@ -501,7 +523,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 82,
     "title": "Update user avatars",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 83,
@@ -531,7 +553,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 87,
     "title": "Improve site speed",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 88,
@@ -579,7 +601,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 95,
     "title": "Investigate 500 errors",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 96,
@@ -591,13 +613,13 @@ export const MOCK_TASKS: Task[] = [
     "id": 97,
     "title": "Review legal compliance",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 98,
     "title": "Write changelog updates",
     "status": "completed",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 99,
@@ -681,7 +703,7 @@ export const MOCK_TASKS: Task[] = [
     "id": 112,
     "title": "Improve logging strategy",
     "status": "in_progress",
-    "priority": "low"
+    "priority": "none"
   },
   {
     "id": 113,

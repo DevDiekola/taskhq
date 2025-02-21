@@ -1,7 +1,7 @@
-import { redoAction, undoAction } from "@/store/reducers/history";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "./use-toast";
+import { REDO_TASK_ACTION, UNDO_TASK_ACTION } from "@/constants/task";
 
 const useUndoRedoShortcut = () => {
   const dispatch = useDispatch();
@@ -21,14 +21,14 @@ const useUndoRedoShortcut = () => {
       if (isUndo) {
         e.preventDefault();
 
-        dispatch(undoAction);
+        dispatch(UNDO_TASK_ACTION);
         toast({
           title: "Undo successful",
         });
       } else if (isRedo) {
         e.preventDefault();
 
-        dispatch(redoAction);
+        dispatch(REDO_TASK_ACTION);
         toast({
           title: "Redo successful",
         });

@@ -4,30 +4,23 @@ import {
   TableRow,
   TableHead,
   TableBody,
-  TableCell,
   Table,
 } from "@/components/ui/table";
 import {
+  TableViewSort,
   Task,
   TaskGroup,
   TaskPayload,
   TaskPriority,
   TaskStatus,
   ViewGroupBy,
-  ViewSort,
   ViewSortColumn,
   ViewSortOrder,
 } from "@/features/task/taskModel";
-import {
-  BarChartIcon,
-  MoreHorizontalIcon,
-  PlusIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import Paginator from "../paginator/Paginator";
 import { useState } from "react";
-import { snakeCaseToTitleCase } from "@/utils/string";
-import TaskActions from "../../../task-actions/TaskActions";
+import { toTitleCase } from "@/utils/string";
 import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-task-modal/CreateUpdateTaskModal";
 import { useDispatch } from "react-redux";
 import {
@@ -42,38 +35,31 @@ import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
 import TaskTableHead from "./components/TaskTableHead";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { undoAction } from "@/store/reducers/history";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
+import { UNDO_TASK_ACTION } from "@/constants/task";
+import TableTask from "./components/TableTask";
+import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropdown";
 
 type Props = {
   group: TaskGroup;
   groupBy?: ViewGroupBy;
   sortColumn?: ViewSortColumn;
   sortOrder?: ViewSortOrder;
+  defaultCurrentPage?: number;
+  defaultPageSize?: number;
 };
 
-const TaskTable: React.FC<Props> = ({
+const TableTaskGroup: React.FC<Props> = ({
   group,
   groupBy,
   sortColumn,
   sortOrder,
+  defaultCurrentPage = 1,
+  defaultPageSize = 10,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(defaultCurrentPage);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const [isSaveTaskModalOpen, setIsSaveTaskModalOpen] = useState(false);
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
@@ -84,7 +70,7 @@ const TaskTable: React.FC<Props> = ({
   const [taskToUpdate, setTaskToUpdate] = useState<Task>();
   const [bulkActionTaskIDs, setBulkActionTaskIDs] = useState<number[]>([]);
 
-  const { id: groupID, name: groupName, tasks } = group;
+  const { name: groupName, tasks } = group;
 
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedTasks = tasks.slice(startIndex, startIndex + pageSize);
@@ -93,7 +79,7 @@ const TaskTable: React.FC<Props> = ({
 
   const handleSort = (newSortColumn: ViewSortColumn) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    const viewSort: ViewSort = {
+    const viewSort: TableViewSort = {
       sortColumn: newSortColumn,
       sortOrder: newSortOrder,
     };
@@ -102,9 +88,9 @@ const TaskTable: React.FC<Props> = ({
 
   const handleCreateTaskModalOpen = () => {
     if (groupBy === "status") {
-      setCreateTaskStatus(group.name as TaskStatus);
+      setCreateTaskStatus(groupName as TaskStatus);
     } else if (groupBy === "priority") {
-      setCreateTaskPriority(group.name as TaskPriority);
+      setCreateTaskPriority(groupName as TaskPriority);
     }
     setIsSaveTaskModalOpen(true);
   };
@@ -143,8 +129,8 @@ const TaskTable: React.FC<Props> = ({
     dispatch(createTask(taskPayload));
   };
 
-  const handleShowDeleteTaskModal = (taskIDs: number[]) => {
-    setBulkActionTaskIDs(taskIDs);
+  const handleShowDeleteTaskModal = (taskIDs: number | number[]) => {
+    setBulkActionTaskIDs(Array.isArray(taskIDs) ? taskIDs : [taskIDs]);
     setIsDeleteTaskModalOpen(true);
   };
 
@@ -159,7 +145,7 @@ const TaskTable: React.FC<Props> = ({
         "Having second thoughts? Click 'Undo' or press CTRL + Z (CMD + Z) to undo",
       action: (
         <ToastAction
-          onClick={() => dispatch(undoAction)}
+          onClick={() => dispatch(UNDO_TASK_ACTION)}
           altText="Undo task delete"
         >
           Undo
@@ -192,10 +178,7 @@ const TaskTable: React.FC<Props> = ({
     if (getIsWholeGroupSelected()) {
       setBulkActionTaskIDs([]);
     } else {
-      setBulkActionTaskIDs([
-        ...bulkActionTaskIDs,
-        ...tasks.map((task) => task.id),
-      ]);
+      setBulkActionTaskIDs(tasks.map((task) => task.id));
     }
   };
 
@@ -210,77 +193,29 @@ const TaskTable: React.FC<Props> = ({
   };
 
   return (
-    <div data-group-id={groupID} className="px-4 py-3">
+    <div className="px-4 py-3">
       <div className="flex justify-between items-center">
         <div className="flex gap-7 items-center">
           <div className="flex gap-2 items-center">
-            <span className="text-[18px]">
-              {snakeCaseToTitleCase(groupName)}
-            </span>
+            <span className="text-[18px]">{toTitleCase(groupName)}</span>
             <span className="text-muted-foreground">({tasks.length})</span>
           </div>
-          <IconButton onClick={() => handleCreateTaskModalOpen()}>
+          <IconButton onClick={handleCreateTaskModalOpen}>
             <PlusIcon size={18} className="text-muted-foreground" />
             <span className="sr-only">Create new task</span>
           </IconButton>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger disabled={bulkActionTaskIDs.length < 1}>
-            <Button variant="secondary" disabled={bulkActionTaskIDs.length < 1}>
-              Bulk actions
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <BarChartIcon />
-                  <span>Set status</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {TASK_STATUSES.map((status) => (
-                      <DropdownMenuItem
-                        key={status}
-                        onClick={() => handleBulkSetTaskStatus(status)}
-                      >
-                        <span>{snakeCaseToTitleCase(status)}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <BarChartIcon />
-                  <span>Set priority</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {TASK_PRIORITIES.map((priority) => (
-                      <DropdownMenuItem
-                        key={priority}
-                        onClick={() => handleBulkSetTaskPriority(priority)}
-                      >
-                        <span className="capitalize">{priority}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleShowDeleteTaskModal(bulkActionTaskIDs)}
-              className="text-red-500"
-            >
-              <Trash2Icon />
-              <span>Bulk delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <BulkActionsDropdown
+          taskIDs={bulkActionTaskIDs}
+          onSetStatus={handleBulkSetTaskStatus}
+          onSetPriority={handleBulkSetTaskPriority}
+          onBulkDelete={handleShowDeleteTaskModal}
+        >
+          <Button variant="secondary">
+            <span>Bulk actions</span>
+            <ChevronDownIcon />
+          </Button>
+        </BulkActionsDropdown>
       </div>
       <Table className="mt-6">
         <TableHeader>
@@ -290,7 +225,7 @@ const TaskTable: React.FC<Props> = ({
               I'm not too lazy to write an HTML input checkbox 😭💀 */}
               <Checkbox
                 checked={getIsWholeGroupSelected()}
-                onCheckedChange={() => handleToggleGroupSelection()}
+                onCheckedChange={handleToggleGroupSelection}
               />
             </TableHead>
             <TaskTableHead
@@ -320,46 +255,21 @@ const TaskTable: React.FC<Props> = ({
         </TableHeader>
         <TableBody>
           {paginatedTasks.map((task) => (
-            <TableRow key={task.id} className="cursor-pointer">
-              <TableCell>
-                <Checkbox
-                  checked={bulkActionTaskIDs.includes(task.id)}
-                  onCheckedChange={() => handleToggleTaskSelection(task.id)}
-                />
-              </TableCell>
-              <TableCell className="font-medium">{task.title}</TableCell>
-              {groupBy !== "status" && (
-                <TableCell className="items-center justify-center">
-                  {snakeCaseToTitleCase(task.status || "")}
-                </TableCell>
-              )}
-              {groupBy !== "priority" && (
-                <TableCell className="items-center justify-center">
-                  {snakeCaseToTitleCase(task.priority || "")}
-                </TableCell>
-              )}
-              <TableCell>
-                <TaskActions
-                  task={task}
-                  onEdit={handleUpdateTaskModalOpen}
-                  onDuplicate={handleDuplicateTask}
-                  onDelete={(task) => handleShowDeleteTaskModal([task.id])}
-                >
-                  <IconButton>
-                    <MoreHorizontalIcon
-                      size={18}
-                      className="text-muted-foreground"
-                    />
-                    <span className="sr-only">Task actions</span>
-                  </IconButton>
-                </TaskActions>
-              </TableCell>
-            </TableRow>
+            <TableTask
+              key={task.id}
+              task={task}
+              groupBy={groupBy}
+              isChecked={bulkActionTaskIDs.includes(task.id)}
+              onCheckedChange={() => handleToggleTaskSelection(task.id)}
+              onEdit={handleUpdateTaskModalOpen}
+              onDuplicate={handleDuplicateTask}
+              onDelete={handleShowDeleteTaskModal}
+            />
           ))}
         </TableBody>
       </Table>
       {bulkActionTaskIDs.length > 0 && (
-        <p className="mt-3">
+        <p className="mt-7">
           Selected {bulkActionTaskIDs.length} of {tasks.length} tasks
         </p>
       )}
@@ -370,7 +280,6 @@ const TaskTable: React.FC<Props> = ({
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
         pageSizeOptions={[5, 10, 20, 50]}
-        className="mt-7"
       />
       {isSaveTaskModalOpen && (
         <CreateUpdateTaskModal
@@ -394,4 +303,4 @@ const TaskTable: React.FC<Props> = ({
   );
 };
 
-export default TaskTable;
+export default TableTaskGroup;

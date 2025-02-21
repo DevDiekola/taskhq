@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 const AppLayout = () => {
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <AppSidebar />
         <SidebarInset className="w-[calc(100%-var(--sidebar-width))]">
           <Outlet />

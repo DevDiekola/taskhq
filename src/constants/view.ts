@@ -1,4 +1,4 @@
-import { View } from "@/pages/my-tasks/components/navbar/models/navbarModel";
+import { View } from "@/pages/my-tasks/components/task-navbar/models/navbarModel";
 import { CircuitBoardIcon, TableCellsMergeIcon } from "lucide-react";
 
 export const views: View[] = [

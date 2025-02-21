@@ -1,4 +1,4 @@
-import { Action, Reducer } from '@reduxjs/toolkit';
+import { PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 interface HistoryState<T> {
   past: T[];
@@ -6,14 +6,14 @@ interface HistoryState<T> {
   future: T[];
 }
 
-const historyReducer = <T>(reducer: Reducer<T, Action>): Reducer<HistoryState<T>, Action> => {
+const historyReducer = <T>(reducer: Reducer<T, PayloadAction<string>>): Reducer<HistoryState<T>, PayloadAction<string>> => {
   const initialState: HistoryState<T> = {
     past: [],
-    present: reducer(undefined, { type: 'INIT' }),
+    present: reducer(undefined, { type: 'INIT', payload: "history" }),
     future: [],
   };
 
-  return (state = initialState, action: Action): HistoryState<T> => {
+  return (state = initialState, action: PayloadAction<string>): HistoryState<T> => {
     const { past, present, future } = state;
 
     switch (action.type) {
@@ -49,8 +49,5 @@ const historyReducer = <T>(reducer: Reducer<T, Action>): Reducer<HistoryState<T>
     }
   };
 };
-
-export const undoAction = { type: "UNDO" };
-export const redoAction = { type: "REDO" };
 
 export default historyReducer;

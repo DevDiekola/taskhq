@@ -13,11 +13,11 @@ type Prop = {
   task: Task;
   onEdit: (task: Task) => void;
   onDuplicate: (task: Task) => void;
-  onDelete: (task: Task) => void;
+  onDelete: (taskID: number) => void;
   children: React.ReactNode;
 };
 
-const TaskActions: React.FC<Prop> = ({
+const TaskActionsDropdown: React.FC<Prop> = ({
   task,
   onEdit,
   onDuplicate,
@@ -27,7 +27,7 @@ const TaskActions: React.FC<Prop> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="min-w-52">
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => onEdit(task)}>
             <EditIcon />
@@ -40,7 +40,7 @@ const TaskActions: React.FC<Prop> = ({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => onDelete(task)}
+          onClick={() => onDelete(task.id)}
           className="text-red-500"
         >
           <Trash2Icon />
@@ -51,4 +51,4 @@ const TaskActions: React.FC<Prop> = ({
   );
 };
 
-export default TaskActions;
+export default TaskActionsDropdown;

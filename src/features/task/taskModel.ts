@@ -1,7 +1,7 @@
 // I'm assuming task statuses can only be one of these three (not nullable)
 export type TaskStatus = 'not_started' | 'in_progress' | 'completed';
 // I'm assuming task priorities can only be one of these four (not nullable)
-export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TaskPriority = 'none' | 'low' | 'medium' | 'high' | 'urgent';
 
 export type Task = {
   id: number;
@@ -19,13 +19,15 @@ export type TaskPayload = {
 
 export type TaskState = {
   tasks: Task[];
-  tableView: View;
-  kanbanView: View;
+  tableView: TableView;
+  kanbanView: KanbanView;
 };
 
+export type TaskGroupName = TaskStatus | TaskPriority | 'All tasks';
+
 export type TaskGroup = {
-  id: number;
-  name: string;
+  // id: number;
+  name: TaskGroupName;
   tasks: Task[];
 };
 
@@ -33,17 +35,22 @@ export type ViewSortColumn = keyof Task;
 export type ViewSortOrder = 'asc' | 'desc';
 export type ViewGroupBy = 'priority' | 'status';
 
-export type View = ViewSort & {
-  filter?: Filter;
+export type TableView = TableViewSort & {
+  filter?: TaskFilter;
   groupBy?: ViewGroupBy;
-};
+}
 
-export type ViewSort = {
+export type TableViewSort = {
   sortColumn?: ViewSortColumn;
   sortOrder?: ViewSortOrder;
 }
 
-export type Filter = {
+export type KanbanView = {
+  filter?: TaskFilter;
+  groupBy: ViewGroupBy;
+};
+
+export type TaskFilter = {
   title?: string;
   status?: TaskStatus;
   priority?: TaskPriority;

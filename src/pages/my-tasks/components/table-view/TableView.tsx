@@ -2,7 +2,7 @@ import { TaskGroup } from "@/features/task/taskModel";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useEffect, useState } from "react";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
-import TaskTable from "./components/task-table/TaskTable";
+import TableTaskGroup from "./components/table-task-group/TableTaskGroup";
 
 const TableView = () => {
   const {
@@ -16,21 +16,18 @@ const TableView = () => {
     let newTaskGroups: TaskGroup[] = [];
 
     if (groupBy === "priority") {
-      newTaskGroups = TASK_PRIORITIES.map((priority, index) => ({
-        id: index + 1,
+      newTaskGroups = TASK_PRIORITIES.map((priority) => ({
         name: priority,
         tasks: allTasks.filter((t) => t.priority === priority),
       }));
     } else if (groupBy === "status") {
-      newTaskGroups = TASK_STATUSES.map((status, index) => ({
-        id: index + 1,
+      newTaskGroups = TASK_STATUSES.map((status) => ({
         name: status,
         tasks: allTasks.filter((t) => t.status === status),
       }));
     } else {
       newTaskGroups = [
         {
-          id: 1,
           name: "All tasks",
           tasks: allTasks,
         },
@@ -64,8 +61,8 @@ const TableView = () => {
   return (
     <div className="flex flex-col gap-9 p-4 h-[calc(100dvh-100px)] overflow-y-auto">
       {taskGroups.map((group) => (
-        <TaskTable
-          key={group.id}
+        <TableTaskGroup
+          key={group.name} // group name is expected to be unique across all groups
           group={group}
           groupBy={groupBy}
           sortColumn={sortColumn}

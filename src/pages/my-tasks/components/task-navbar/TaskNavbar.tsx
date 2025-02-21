@@ -1,26 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { GroupIcon, PlusIcon, RotateCcw, RotateCw } from "lucide-react";
+import { ChevronDownIcon, PlusIcon, RotateCcw, RotateCw } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ViewID } from "./models/navbarModel";
 import { views } from "@/constants/view";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useDispatch } from "react-redux";
-import {
-  createTask,
-  setKanbanGroupBy,
-  setTableGroupBy,
-} from "@/features/task/taskSlice";
-import { GROUP_BY_PRIORITY, GROUP_BY_STATUS } from "@/constants/task";
-import { TaskPayload, ViewGroupBy } from "@/features/task/taskModel";
-import { redoAction, undoAction } from "@/store/reducers/history";
+import { createTask, seedTasks } from "@/features/task/taskSlice";
+import { TaskPayload } from "@/features/task/taskModel";
 import {
   Tooltip,
   TooltipContent,
@@ -29,8 +17,22 @@ import {
 } from "@/components/ui/tooltip";
 import { useState } from "react";
 import CreateUpdateTaskModal from "../create-task-modal/CreateUpdateTaskModal";
+import TableGroupBy from "./table-group-by/TableGroupBy";
+import KanbanGroupBy from "./kanban-group-by/KanbanGroupBy";
+import SeedTaskModal from "../seed-task-modal/SeedTaskModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  MOCK_TASKS,
+  REDO_TASK_ACTION,
+  UNDO_TASK_ACTION,
+} from "@/constants/task";
 
-const Navbar = () => {
+const TaskNavbar = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
 
@@ -44,13 +46,14 @@ const Navbar = () => {
 
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
-  const {
-    tableView: { groupBy },
-  } = useAppSelector((state) => state.taskState.present);
+  const [isSeedTaskModalOpen, setIsSeedTaskModalOpen] = useState(false);
+  const [seedCount, setSeedCount] = useState(0);
 
-  const { past: pastState, future: futureState } = useAppSelector(
-    (state) => state.taskState
-  );
+  const {
+    past: pastState,
+    present: { tasks },
+    future: futureState,
+  } = useAppSelector((state) => state.taskState);
 
   const getActiveClass = (viewID: ViewID) => {
     if (viewID === activeViewID) {
@@ -59,19 +62,23 @@ const Navbar = () => {
     return "text-muted-foreground";
   };
 
-  const handleSetGroupBy = (groupBy: ViewGroupBy, checked: boolean) => {
-    const groupByValue = checked ? groupBy : undefined;
-
-    if (activeViewID === "table") {
-      dispatch(setTableGroupBy(groupByValue));
-    } else {
-      dispatch(setKanbanGroupBy(groupByValue));
-    }
-  };
-
   const handleTaskCreate = (taskPayload: TaskPayload) => {
     dispatch(createTask(taskPayload));
     setIsCreateTaskModalOpen(false);
+  };
+
+  const handleTaskSeed = (count: number) => {
+    dispatch(seedTasks(count));
+    setIsSeedTaskModalOpen(false);
+  };
+
+  const handleTaskSeedClick = (count: number) => {
+    if (tasks.length > 0) {
+      setSeedCount(count);
+      setIsSeedTaskModalOpen(true);
+      return;
+    }
+    dispatch(seedTasks(count));
   };
 
   return (
@@ -81,10 +88,33 @@ const Navbar = () => {
           <SidebarTrigger className="-ml-1" />
           <h3 className="font-medium">My Tasks</h3>
         </div>
-        <Button onClick={() => setIsCreateTaskModalOpen(true)} className="px-5">
-          New task
-          <PlusIcon />
-        </Button>
+        <div className="flex gap-5">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="px-5">
+                <span>Seed tasks</span>
+                <ChevronDownIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="min-w-52">
+              {[10, 20, 50, MOCK_TASKS.length].map((count) => (
+                <DropdownMenuItem
+                  key={count}
+                  onClick={() => handleTaskSeedClick(count)}
+                >
+                  {count}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            onClick={() => setIsCreateTaskModalOpen(true)}
+            className="px-5"
+          >
+            <span>New task</span>
+            <PlusIcon />
+          </Button>
+        </div>
       </div>
       <div className="flex justify-between">
         <div className="flex gap-5 text-[15px]">
@@ -109,11 +139,11 @@ const Navbar = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <RotateCcw
-                    onClick={() => dispatch(undoAction)}
+                    onClick={() => dispatch(UNDO_TASK_ACTION)}
                     size={20}
                     className={cn(
                       "cursor-pointer",
-                      pastState.length > 0 ? "" : "opacity-50"
+                      pastState.length === 0 && "opacity-50"
                     )}
                   />
                 </TooltipTrigger>
@@ -126,11 +156,11 @@ const Navbar = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <RotateCw
-                    onClick={() => dispatch(redoAction)}
+                    onClick={() => dispatch(REDO_TASK_ACTION)}
                     size={20}
                     className={cn(
                       "cursor-pointer",
-                      futureState.length > 0 ? "" : "opacity-50"
+                      futureState.length === 0 && "opacity-50"
                     )}
                   />
                 </TooltipTrigger>
@@ -140,35 +170,7 @@ const Navbar = () => {
               </Tooltip>
             </TooltipProvider>
           </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
-                <GroupIcon size={13} className="mb-1" />
-                <span className="font-medium capitalize">
-                  Group By{groupBy ? `: ${groupBy}` : ""}
-                </span>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuCheckboxItem
-                checked={groupBy === GROUP_BY_STATUS}
-                onCheckedChange={(checked) =>
-                  handleSetGroupBy(GROUP_BY_STATUS, checked)
-                }
-              >
-                Status
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={groupBy === GROUP_BY_PRIORITY}
-                onCheckedChange={(checked) =>
-                  handleSetGroupBy(GROUP_BY_PRIORITY, checked)
-                }
-              >
-                Priority
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {activeViewID === "table" ? <TableGroupBy /> : <KanbanGroupBy />}
         </div>
       </div>
       {isCreateTaskModalOpen && (
@@ -178,8 +180,16 @@ const Navbar = () => {
           onClose={() => setIsCreateTaskModalOpen(false)}
         />
       )}
+      {isSeedTaskModalOpen && (
+        <SeedTaskModal
+          isOpen={isSeedTaskModalOpen}
+          seedCount={seedCount}
+          onSeed={handleTaskSeed}
+          onClose={() => setIsSeedTaskModalOpen(false)}
+        />
+      )}
     </nav>
   );
 };
 
-export default Navbar;
+export default TaskNavbar;

@@ -1,10 +1,10 @@
 import { JSX, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { ViewID } from "./components/navbar/models/navbarModel";
+import { ViewID } from "./components/task-navbar/models/navbarModel";
 import TableView from "./components/table-view/TableView";
 import KanbanView from "./components/kanban-view/KanbanView";
-import Navbar from "./components/navbar/Navbar";
 import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
+import TaskNavbar from "./components/task-navbar/TaskNavbar";
 
 const MyTasks = () => {
   const { search } = useLocation();
@@ -30,7 +30,7 @@ const MyTasks = () => {
 
   return (
     <div>
-      <Navbar />
+      <TaskNavbar />
       {viewPages[activeViewID] || <h3>Ooops, wrong page</h3>}
     </div>
   );

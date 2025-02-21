@@ -6,7 +6,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 
 type PaginationProps = {
   currentPage: number;
@@ -15,7 +14,6 @@ type PaginationProps = {
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   pageSizeOptions?: number[];
-  className?: string;
 };
 
 const Paginator: React.FC<PaginationProps> = ({
@@ -25,7 +23,6 @@ const Paginator: React.FC<PaginationProps> = ({
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [10, 20, 50, 100],
-  className,
 }) => {
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -44,13 +41,8 @@ const Paginator: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col md:flex-row items-center justify-between",
-        className
-      )}
-    >
-      <div className="flex items-center gap-5">
+    <div className={"flex flex-col md:flex-row items-center justify-between"}>
+      <div className="flex items-center gap-5 mt-7">
         <span className="text-sm">Show</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +50,7 @@ const Paginator: React.FC<PaginationProps> = ({
               {pageSize}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className="min-w-52">
             <DropdownMenuRadioGroup
               value={`${pageSize}`}
               onValueChange={handlePageSizeChange}
@@ -74,11 +66,11 @@ const Paginator: React.FC<PaginationProps> = ({
         <span className="text-sm">entries</span>
       </div>
 
-      <span>
+      <span className="mt-7">
         Showing page {currentPage} of {totalPages}
       </span>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2 mt-7">
         <Button
           variant="outline"
           size="sm"

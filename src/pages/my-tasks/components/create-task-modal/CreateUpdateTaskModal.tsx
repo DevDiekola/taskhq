@@ -34,7 +34,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
-import { snakeCaseToTitleCase } from "@/utils/string";
+import { toTitleCase } from "@/utils/string";
+import { ChevronDown } from "lucide-react";
 
 const taskSchema = z.object({
   title: z.string().min(1).max(100),
@@ -54,7 +55,7 @@ type Props = {
 const CreateUpdateTaskModal: React.FC<Props> = ({
   isOpen,
   task,
-  defaultPriority = "low",
+  defaultPriority = "none",
   defaultStatus = "not_started",
   onSubmit,
   onClose,
@@ -86,7 +87,7 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[90%] md:w-[700px]">
+      <DialogContent className="w-[90%] md:w-[500px]">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -114,54 +115,62 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
               )}
             />
             <div className="flex gap-5">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    Status
-                    {selectedStatus
-                      ? `: ${snakeCaseToTitleCase(selectedStatus)}`
-                      : ""}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuRadioGroup
-                    value={selectedStatus}
-                    onValueChange={(value) =>
-                      setSelectedStatus(value as TaskStatus)
-                    }
-                  >
-                    {TASK_STATUSES.map((status) => (
-                      <DropdownMenuRadioItem key={status} value={status}>
-                        {snakeCaseToTitleCase(status)}
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    Priority{" "}
-                    {selectedPriority
-                      ? `: ${snakeCaseToTitleCase(selectedPriority)}`
-                      : ""}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuRadioGroup
-                    value={selectedPriority}
-                    onValueChange={(value) =>
-                      setSelectedPriority(value as TaskPriority)
-                    }
-                  >
-                    {TASK_PRIORITIES.map((priority) => (
-                      <DropdownMenuRadioItem key={priority} value={priority}>
-                        {snakeCaseToTitleCase(priority)}
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <FormItem className="flex-1">
+                <FormLabel>Status</FormLabel>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full flex justify-between"
+                    >
+                      <span>{toTitleCase(selectedStatus)}</span>
+                      <ChevronDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-52">
+                    <DropdownMenuRadioGroup
+                      value={selectedStatus}
+                      onValueChange={(value) =>
+                        setSelectedStatus(value as TaskStatus)
+                      }
+                    >
+                      {TASK_STATUSES.map((status) => (
+                        <DropdownMenuRadioItem key={status} value={status}>
+                          {toTitleCase(status)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </FormItem>
+              <FormItem className="flex-1">
+                <FormLabel>Priority</FormLabel>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full flex justify-between"
+                    >
+                      <span>{toTitleCase(selectedPriority)}</span>
+                      <ChevronDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-52">
+                    <DropdownMenuRadioGroup
+                      value={selectedPriority}
+                      onValueChange={(value) =>
+                        setSelectedPriority(value as TaskPriority)
+                      }
+                    >
+                      {TASK_PRIORITIES.map((priority) => (
+                        <DropdownMenuRadioItem key={priority} value={priority}>
+                          {toTitleCase(priority)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </FormItem>
             </div>
             <DialogFooter className="justify-end">
               <Button type="submit">Create task</Button>

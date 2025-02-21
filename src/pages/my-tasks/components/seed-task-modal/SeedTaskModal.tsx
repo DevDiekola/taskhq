@@ -11,36 +11,34 @@ import {
 
 type Prop = {
   isOpen: boolean;
-  taskIDs: number[];
-  onDelete: (taskIDs: number[]) => void;
+  seedCount: number;
+  onSeed: (seedCount: number) => void;
   onClose: () => void;
 };
 
-const DeleteTaskModal: React.FC<Prop> = ({
+const SeedTaskModal: React.FC<Prop> = ({
   isOpen,
-  taskIDs,
-  onDelete,
+  seedCount,
+  onSeed,
   onClose,
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Are you sure you want to delete{" "}
-            {taskIDs.length > 1 ? "these tasks" : "this task"}?
-          </AlertDialogTitle>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription className="text-[16px]">
-            You might lose {taskIDs.length > 1 ? "them" : "it"} permanently!
+            It looks like you have existing task(s). Seeding will erase all your
+            existing task(s).
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={() => onDelete(taskIDs)}
+            onClick={() => onSeed(seedCount)}
           >
-            Delete
+            Seed Anyway
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -48,4 +46,4 @@ const DeleteTaskModal: React.FC<Prop> = ({
   );
 };
 
-export default DeleteTaskModal;
+export default SeedTaskModal;
