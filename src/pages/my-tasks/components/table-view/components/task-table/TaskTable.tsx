@@ -358,6 +358,11 @@ const TaskTable: React.FC<Props> = ({
           ))}
         </TableBody>
       </Table>
+      {bulkActionTaskIDs.length > 0 && (
+        <p className="mt-3">
+          Selected {bulkActionTaskIDs.length} of {tasks.length} tasks
+        </p>
+      )}
       <Paginator
         currentPage={currentPage}
         totalItems={tasks.length}
@@ -377,7 +382,7 @@ const TaskTable: React.FC<Props> = ({
           onClose={handleSaveTaskModalClose}
         />
       )}
-      {isDeleteTaskModalOpen && bulkActionTaskIDs.length && (
+      {isDeleteTaskModalOpen && bulkActionTaskIDs.length > 0 && (
         <DeleteTaskModal
           isOpen={isDeleteTaskModalOpen}
           taskIDs={bulkActionTaskIDs}

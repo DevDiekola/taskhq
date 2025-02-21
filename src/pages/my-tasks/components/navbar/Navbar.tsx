@@ -113,7 +113,7 @@ const Navbar = () => {
                     size={20}
                     className={cn(
                       "cursor-pointer",
-                      pastState.length ? "" : "opacity-50"
+                      pastState.length > 0 ? "" : "opacity-50"
                     )}
                   />
                 </TooltipTrigger>
@@ -130,7 +130,7 @@ const Navbar = () => {
                     size={20}
                     className={cn(
                       "cursor-pointer",
-                      futureState.length ? "" : "opacity-50"
+                      futureState.length > 0 ? "" : "opacity-50"
                     )}
                   />
                 </TooltipTrigger>
