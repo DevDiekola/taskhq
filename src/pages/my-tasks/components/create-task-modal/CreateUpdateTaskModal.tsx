@@ -29,10 +29,8 @@ import { z } from "zod";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
@@ -56,7 +54,7 @@ type Props = {
 const CreateUpdateTaskModal: React.FC<Props> = ({
   isOpen,
   task,
-  defaultPriority,
+  defaultPriority = "low",
   defaultStatus = "not_started",
   onSubmit,
   onClose,
@@ -126,8 +124,6 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
                     value={selectedStatus}
                     onValueChange={(value) =>
@@ -152,8 +148,6 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Priority</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
                     value={selectedPriority}
                     onValueChange={(value) =>

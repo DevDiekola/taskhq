@@ -1,20 +1,20 @@
-// I'm assuming task statuses can only be one of these three
+// I'm assuming task statuses can only be one of these three (not nullable)
 export type TaskStatus = 'not_started' | 'in_progress' | 'completed';
-// I'm assuming task priorities can only be one of these four
+// I'm assuming task priorities can only be one of these four (not nullable)
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export type Task = {
   id: number;
   title: string;
-  status?: TaskStatus;
-  priority?: TaskPriority;
+  status: TaskStatus;
+  priority: TaskPriority;
 }
 
 export type TaskPayload = {
   id?: number;
   title: string;
-  status?: TaskStatus;
-  priority?: TaskPriority;
+  status: TaskStatus;
+  priority: TaskPriority;
 }
 
 export type TaskState = {

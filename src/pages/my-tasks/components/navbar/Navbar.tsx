@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { GroupIcon, RotateCcw, RotateCw, Share2Icon } from "lucide-react";
+import { GroupIcon, PlusIcon, RotateCcw, RotateCw } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ViewID } from "./models/navbarModel";
 import { views } from "@/constants/view";
@@ -13,10 +13,13 @@ import {
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useDispatch } from "react-redux";
-import { setKanbanGroupBy, setTableGroupBy } from "@/features/task/taskSlice";
+import {
+  createTask,
+  setKanbanGroupBy,
+  setTableGroupBy,
+} from "@/features/task/taskSlice";
 import { GROUP_BY_PRIORITY, GROUP_BY_STATUS } from "@/constants/task";
-import { ViewGroupBy } from "@/features/task/taskModel";
-import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
+import { TaskPayload, ViewGroupBy } from "@/features/task/taskModel";
 import { redoAction, undoAction } from "@/store/reducers/history";
 import {
   Tooltip,
@@ -24,6 +27,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
+import CreateUpdateTaskModal from "../create-task-modal/CreateUpdateTaskModal";
 
 const Navbar = () => {
   const { search } = useLocation();
@@ -37,7 +42,7 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
 
-  useUndoRedoShortcut();
+  const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   const {
     tableView: { groupBy },
@@ -64,6 +69,11 @@ const Navbar = () => {
     }
   };
 
+  const handleTaskCreate = (taskPayload: TaskPayload) => {
+    dispatch(createTask(taskPayload));
+    setIsCreateTaskModalOpen(false);
+  };
+
   return (
     <nav aria-label="My task navbar" className="bg-background border-b px-4">
       <div className="flex justify-between items-center pt-4 pb-2">
@@ -71,10 +81,9 @@ const Navbar = () => {
           <SidebarTrigger className="-ml-1" />
           <h3 className="font-medium">My Tasks</h3>
         </div>
-
-        <Button className="w-[100px] h-[35px]">
-          <Share2Icon size={13} className="mr-2" />
-          Share
+        <Button onClick={() => setIsCreateTaskModalOpen(true)} className="px-5">
+          New task
+          <PlusIcon />
         </Button>
       </div>
       <div className="flex justify-between">
@@ -162,6 +171,13 @@ const Navbar = () => {
           </DropdownMenu>
         </div>
       </div>
+      {isCreateTaskModalOpen && (
+        <CreateUpdateTaskModal
+          isOpen={isCreateTaskModalOpen}
+          onSubmit={handleTaskCreate}
+          onClose={() => setIsCreateTaskModalOpen(false)}
+        />
+      )}
     </nav>
   );
 };

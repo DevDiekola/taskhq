@@ -4,6 +4,7 @@ import { ViewID } from "./components/navbar/models/navbarModel";
 import TableView from "./components/table-view/TableView";
 import KanbanView from "./components/kanban-view/KanbanView";
 import Navbar from "./components/navbar/Navbar";
+import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
 
 const MyTasks = () => {
   const { search } = useLocation();
@@ -12,6 +13,9 @@ const MyTasks = () => {
   const viewID = queryParams.get("view");
 
   const [activeViewID, setActiveViewID] = useState<ViewID>("table");
+
+  // Enables task action undo/redo using keyboard shortcuts
+  useUndoRedoShortcut();
 
   useEffect(() => {
     if (viewID) {

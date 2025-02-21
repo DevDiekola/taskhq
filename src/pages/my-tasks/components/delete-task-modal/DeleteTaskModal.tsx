@@ -8,18 +8,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Task } from "@/features/task/taskModel";
 
 type Prop = {
   isOpen: boolean;
-  task: Task;
-  onDelete: (task: Task) => void;
+  taskIDs: number[];
+  onDelete: (taskIDs: number[]) => void;
   onClose: () => void;
 };
 
 const DeleteTaskModal: React.FC<Prop> = ({
   isOpen,
-  task,
+  taskIDs,
   onDelete,
   onClose,
 }) => {
@@ -28,18 +27,18 @@ const DeleteTaskModal: React.FC<Prop> = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Are you sure you want to delete this task?
+            Are you sure you want to delete{" "}
+            {taskIDs.length > 1 ? "these tasks" : "this task"}?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete "
-            {task.title}"
+            You might lose {taskIDs.length > 1 ? "them" : "it"} permanently!
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={() => onDelete(task)}
+            onClick={() => onDelete(taskIDs)}
           >
             Delete
           </AlertDialogAction>

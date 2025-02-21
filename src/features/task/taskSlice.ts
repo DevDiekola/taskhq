@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TaskPayload, Task, TaskState, View, ViewGroupBy, ViewSort } from './taskModel';
+import { TaskPayload, Task, TaskState, View, ViewGroupBy, ViewSort, TaskPriority, TaskStatus } from './taskModel';
 import { KANBAN_VIEW_LOCAL_STORAGE_KEY, TABLE_VIEW_LOCAL_STORAGE_KEY, TASK_LOCAL_STORAGE_KEY } from '@/constants/task';
 import historyReducer from '@/store/reducers/history';
 
@@ -58,8 +58,24 @@ const taskSlice = createSlice({
       }
       state.tasks[index] = action.payload as Task;
     },
-    deleteTask: (state, action: PayloadAction<number>) => {
-      state.tasks = state.tasks.filter(task => task.id !== action.payload);
+    bulkDeleteTasks: (state, action: PayloadAction<number[]>) => {
+      state.tasks = state.tasks.filter(task => !action.payload.includes(task.id));
+    },
+    bulkSetTaskStatus: (state, action: PayloadAction<{ ids: number[], status: TaskStatus }>) => {
+      state.tasks = state.tasks.map(task => {
+        if (action.payload.ids.includes(task.id)) {
+          return { ...task, status: action.payload.status }
+        }
+        return task;
+      });
+    },
+    bulkSetTaskPriority: (state, action: PayloadAction<{ ids: number[], priority: TaskPriority }>) => {
+      state.tasks = state.tasks.map(task => {
+        if (action.payload.ids.includes(task.id)) {
+          return { ...task, priority: action.payload.priority }
+        }
+        return task;
+      });
     },
     setTableGroupBy: (state, action: PayloadAction<ViewGroupBy | undefined>) => {
       state.tableView.groupBy = action.payload;
@@ -76,5 +92,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { createTask, updateTask, deleteTask, setTableGroupBy, setKanbanGroupBy, setTableSort } = taskSlice.actions;
+export const { createTask, updateTask, bulkDeleteTasks, bulkSetTaskStatus, bulkSetTaskPriority, setTableGroupBy, setKanbanGroupBy, setTableSort } = taskSlice.actions;
 export default historyReducer(taskSlice.reducer);
