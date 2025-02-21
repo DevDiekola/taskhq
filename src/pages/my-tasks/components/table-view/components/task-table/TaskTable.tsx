@@ -197,43 +197,6 @@ const TaskTable: React.FC<Props> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {/* <ReactSortable
-          list={group.tasks.map((t) => {
-            return { ...t };
-          })}
-          setList={(newTasks, sortable) => {
-            if (!sortable) {
-              return;
-            }
-            const newGroupIDString = sortable.el
-              .closest("[data-group-id]")
-              ?.getAttribute("data-group-id");
-            if (!newGroupIDString) {
-              return;
-            }
-            const newGroupID = parseInt(newGroupIDString, 10);
-            setTaskGroups((prevGroups) =>
-              prevGroups.map((group) => {
-                if (group.id === newGroupID) {
-                  return group;
-                }
-                return {
-                  ...group,
-                  tasks: group.tasks.filter(
-                    (task) =>
-                      !newTasks.some((newTask) => newTask.id === task.id)
-                  ),
-                };
-              })
-            );
-          }}
-          animation={200}
-          group={{ name: "shared", pull: true, put: true }}
-          ghostClass="sortable-ghost"
-          dragClass="sortable-drag"
-          tag={TableBody}
-          className="connect-sorting-content"
-        > */}
           {paginatedTasks.map((task) => (
             <TableRow key={task.id} className="cursor-pointer">
               <TableCell className="font-medium">{task.title}</TableCell>
@@ -265,7 +228,6 @@ const TaskTable: React.FC<Props> = ({
               </TableCell>
             </TableRow>
           ))}
-          {/* </ReactSortable> */}
         </TableBody>
       </Table>
       <Paginator
