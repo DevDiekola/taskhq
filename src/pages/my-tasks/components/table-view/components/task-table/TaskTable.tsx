@@ -33,6 +33,9 @@ import {
 } from "@/features/task/taskSlice";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
 import TaskTableHead from "./components/TaskTableHead";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { undoAction } from "@/store/reducers/history";
 
 type Props = {
   group: TaskGroup;
@@ -127,6 +130,19 @@ const TaskTable: React.FC<Props> = ({
     dispatch(deleteTask(task.id));
     setTaskToDelete(undefined);
     setIsDeleteTaskModalOpen(false);
+
+    toast({
+      title: "Task deleted successfully",
+      description: "Having second thoughts?",
+      action: (
+        <ToastAction
+          onClick={() => dispatch(undoAction)}
+          altText="Undo task delete"
+        >
+          Undo
+        </ToastAction>
+      ),
+    });
   };
 
   const handleDeleteTaskModalClose = () => {

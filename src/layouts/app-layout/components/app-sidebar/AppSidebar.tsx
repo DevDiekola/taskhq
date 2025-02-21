@@ -19,7 +19,7 @@ import NavUser from "./components/nav-user/NavUser";
 const navMain = [
   {
     name: "Home",
-    slug: "home",
+    slug: "#",
     icon: HomeIcon,
   },
   {
@@ -29,12 +29,12 @@ const navMain = [
   },
   {
     name: "Inbox",
-    slug: "inbox",
+    slug: "#",
     icon: InboxIcon,
   },
   {
     name: "Dashboards",
-    slug: "dashboards",
+    slug: "#",
     icon: ChartColumnIncreasingIcon,
   },
 ];

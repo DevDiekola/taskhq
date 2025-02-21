@@ -8,7 +8,7 @@ const TableView = () => {
   const {
     tasks: allTasks,
     tableView: { groupBy, sortColumn, sortOrder },
-  } = useAppSelector((state) => state.taskState);
+  } = useAppSelector((state) => state.taskState.present);
 
   const [taskGroups, setTaskGroups] = useState<TaskGroup[]>([]);
 

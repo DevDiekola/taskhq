@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { GroupIcon, Share2Icon } from "lucide-react";
+import { GroupIcon, RotateCcw, RotateCw, Share2Icon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ViewID } from "./models/navbarModel";
 import { views } from "@/constants/view";
@@ -16,6 +16,8 @@ import { useDispatch } from "react-redux";
 import { setKanbanGroupBy, setTableGroupBy } from "@/features/task/taskSlice";
 import { GROUP_BY_PRIORITY, GROUP_BY_STATUS } from "@/constants/task";
 import { ViewGroupBy } from "@/features/task/taskModel";
+import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
+import { redoAction, undoAction } from "@/store/reducers/history";
 
 const Navbar = () => {
   const { search } = useLocation();
@@ -29,9 +31,15 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
 
+  useUndoRedoShortcut();
+
   const {
     tableView: { groupBy },
-  } = useAppSelector((state) => state.taskState);
+  } = useAppSelector((state) => state.taskState.present);
+
+  const { past: pastState, future: futureState } = useAppSelector(
+    (state) => state.taskState
+  );
 
   const getActiveClass = (viewID: ViewID) => {
     if (viewID === activeViewID) {
@@ -80,34 +88,55 @@ const Navbar = () => {
           ))}
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
-              <GroupIcon size={13} className="mb-1" />
-              <span className="font-medium capitalize">
-                Group By{groupBy ? `: ${groupBy}` : ""}
-              </span>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuCheckboxItem
-              checked={groupBy === GROUP_BY_STATUS}
-              onCheckedChange={(checked) =>
-                handleSetGroupBy(GROUP_BY_STATUS, checked)
-              }
-            >
-              Status
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={groupBy === GROUP_BY_PRIORITY}
-              onCheckedChange={(checked) =>
-                handleSetGroupBy(GROUP_BY_PRIORITY, checked)
-              }
-            >
-              Priority
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-10">
+          <div className="flex gap-5">
+            <RotateCcw
+              onClick={() => dispatch(undoAction)}
+              size={20}
+              className={cn(
+                "cursor-pointer",
+                pastState.length ? "" : "opacity-50"
+              )}
+            />
+            <RotateCw
+              onClick={() => dispatch(redoAction)}
+              size={20}
+              className={cn(
+                "cursor-pointer",
+                futureState.length ? "" : "opacity-50"
+              )}
+            />
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
+                <GroupIcon size={13} className="mb-1" />
+                <span className="font-medium capitalize">
+                  Group By{groupBy ? `: ${groupBy}` : ""}
+                </span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuCheckboxItem
+                checked={groupBy === GROUP_BY_STATUS}
+                onCheckedChange={(checked) =>
+                  handleSetGroupBy(GROUP_BY_STATUS, checked)
+                }
+              >
+                Status
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={groupBy === GROUP_BY_PRIORITY}
+                onCheckedChange={(checked) =>
+                  handleSetGroupBy(GROUP_BY_PRIORITY, checked)
+                }
+              >
+                Priority
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </nav>
   );
