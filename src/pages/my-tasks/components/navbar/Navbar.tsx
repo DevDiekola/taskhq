@@ -18,6 +18,12 @@ import { GROUP_BY_PRIORITY, GROUP_BY_STATUS } from "@/constants/task";
 import { ViewGroupBy } from "@/features/task/taskModel";
 import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
 import { redoAction, undoAction } from "@/store/reducers/history";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Navbar = () => {
   const { search } = useLocation();
@@ -90,22 +96,40 @@ const Navbar = () => {
 
         <div className="flex items-center gap-10">
           <div className="flex gap-5">
-            <RotateCcw
-              onClick={() => dispatch(undoAction)}
-              size={20}
-              className={cn(
-                "cursor-pointer",
-                pastState.length ? "" : "opacity-50"
-              )}
-            />
-            <RotateCw
-              onClick={() => dispatch(redoAction)}
-              size={20}
-              className={cn(
-                "cursor-pointer",
-                futureState.length ? "" : "opacity-50"
-              )}
-            />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <RotateCcw
+                    onClick={() => dispatch(undoAction)}
+                    size={20}
+                    className={cn(
+                      "cursor-pointer",
+                      pastState.length ? "" : "opacity-50"
+                    )}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Undo last action</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <RotateCw
+                    onClick={() => dispatch(redoAction)}
+                    size={20}
+                    className={cn(
+                      "cursor-pointer",
+                      futureState.length ? "" : "opacity-50"
+                    )}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Redo last action</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <DropdownMenu>

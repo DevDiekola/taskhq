@@ -13,9 +13,10 @@ type Props = {
     name: string;
     slug: string;
     icon: LucideIcon;
+    isDisabled: boolean;
   }[];
 };
-const NavMain = ({ items }: Props) => {
+const NavMain: React.FC<Props> = ({ items }) => {
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const lastSegment = pathSegments[pathSegments.length - 1];
@@ -34,7 +35,11 @@ const NavMain = ({ items }: Props) => {
                   : "hover:bg-muted"
               }
             >
-              <Link to={`/${item.slug}`}>
+              <Link
+                to={`/${item.slug}`}
+                onClick={(e) => item.isDisabled && e.preventDefault()}
+                aria-disabled={item.isDisabled}
+              >
                 <item.icon />
                 <span className="font-medium">{item.name}</span>
               </Link>

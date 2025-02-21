@@ -8,8 +8,6 @@ const useUndoRedoShortcut = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      e.preventDefault();
-
       // Don't freak out lol... this is code jargons for CTRL+Z (Windows) or COMMAND+Z (MacOS)
       const isUndo =
         (e.ctrlKey && e.key.toLowerCase() === "z") ||
@@ -21,11 +19,15 @@ const useUndoRedoShortcut = () => {
         (e.metaKey && e.shiftKey && e.key.toLowerCase() === "z");
 
       if (isUndo) {
+        e.preventDefault();
+
         dispatch(undoAction);
         toast({
           title: "Undo successful",
         });
       } else if (isRedo) {
+        e.preventDefault();
+
         dispatch(redoAction);
         toast({
           title: "Redo successful",

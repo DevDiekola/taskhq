@@ -21,21 +21,25 @@ const navMain = [
     name: "Home",
     slug: "#",
     icon: HomeIcon,
+    isDisabled: true,
   },
   {
     name: "My tasks",
     slug: "my-tasks",
     icon: ListTodoIcon,
+    isDisabled: false,
   },
   {
     name: "Inbox",
     slug: "#",
     icon: InboxIcon,
+    isDisabled: true,
   },
   {
     name: "Dashboards",
     slug: "#",
     icon: ChartColumnIncreasingIcon,
+    isDisabled: true,
   },
 ];
 

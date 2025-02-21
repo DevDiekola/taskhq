@@ -155,18 +155,12 @@ const TaskTable: React.FC<Props> = ({
       <div className="inline-flex gap-7 justify-between items-center">
         <div className="flex gap-2 items-center">
           <span className="text-[18px]">{snakeCaseToTitleCase(groupName)}</span>
-          <span className="text-muted-foreground">{tasks.length}</span>
+          <span className="text-muted-foreground">({tasks.length})</span>
         </div>
-        <div className="flex items-center gap-3">
-          <IconButton>
-            <MoreHorizontalIcon size={18} className="text-muted-foreground" />
-            <span className="sr-only">More task actions</span>
-          </IconButton>
-          <IconButton onClick={() => handleCreateTaskModalOpen()}>
-            <PlusIcon size={18} className="text-muted-foreground" />
-            <span className="sr-only">Create new task</span>
-          </IconButton>
-        </div>
+        <IconButton onClick={() => handleCreateTaskModalOpen()}>
+          <PlusIcon size={18} className="text-muted-foreground" />
+          <span className="sr-only">Create new task</span>
+        </IconButton>
       </div>
       <Table className="mt-6">
         <TableHeader>

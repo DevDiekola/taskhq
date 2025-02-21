@@ -109,7 +109,7 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
                 <FormItem>
                   <FormLabel>Task title</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter task name" />
+                    <Input {...field} placeholder="Enter task title" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
