@@ -35,6 +35,12 @@ export type TaskState = {
 
 export type TableTaskGroupName = KanbanTaskGroupName | "All tasks";
 
+export type TaskGroupClassNames = {
+  background: string;
+  foreground: string;
+  border: string;
+};
+
 export type KanbanTaskGroupName = TaskStatus | TaskPriority;
 
 export type TableTaskGroup = {

@@ -2,11 +2,11 @@ import { MoreHorizontalIcon } from "lucide-react";
 import { Task, TaskGroupBy } from "@/features/task/taskModel";
 import { Badge } from "@/components/ui/badge";
 import { toTitleCase } from "@/utils/string";
-import { getPriorityClassNames, getStatusClassNames } from "@/utils/color";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
 import IconButton from "@/components/icon-button/IconButton";
+import { getPriorityClassNames, getStatusClassNames } from "@/utils/task";
 
 type Props = {
   task: Task;

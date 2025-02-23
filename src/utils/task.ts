@@ -9,7 +9,34 @@ import {
   KanbanTaskGroup,
   KanbanOrder,
   KanbanTaskGroupName,
+  TaskGroupClassNames,
 } from "@/features/task/taskModel";
+import { PRIORITY_CLASS_NAMES, STATUS_CLASS_NAMES } from "@/constants/task";
+import { TaskPriority, TaskStatus } from "@/features/task/taskModel";
+
+export const getStatusClassNames = (
+  status: TaskStatus
+): TaskGroupClassNames => {
+  return (
+    STATUS_CLASS_NAMES[status] ?? {
+      background: "bg-gray-100",
+      foreground: "text-gray-800",
+      border: "border-gray-100",
+    }
+  );
+};
+
+export const getPriorityClassNames = (
+  priority: TaskPriority
+): TaskGroupClassNames => {
+  return (
+    PRIORITY_CLASS_NAMES[priority] ?? {
+      background: "bg-gray-100",
+      foreground: "text-gray-800",
+      border: "border-gray-100",
+    }
+  );
+};
 
 export const filterTasks = (tasks: Task[], filter?: TaskFilter) => {
   if (!filter) {

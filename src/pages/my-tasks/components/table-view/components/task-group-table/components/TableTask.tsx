@@ -5,8 +5,8 @@ import { TableRow, TableCell } from "@/components/ui/table";
 import { Task, TaskGroupBy } from "@/features/task/taskModel";
 import { cn } from "@/lib/utils";
 import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
-import { getPriorityClassNames, getStatusClassNames } from "@/utils/color";
 import { toTitleCase } from "@/utils/string";
+import { getStatusClassNames, getPriorityClassNames } from "@/utils/task";
 import { MoreHorizontalIcon } from "lucide-react";
 
 type Props = {
