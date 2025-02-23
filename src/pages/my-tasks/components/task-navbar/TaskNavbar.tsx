@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   ChevronDownIcon,
   PlusIcon,
@@ -37,6 +36,7 @@ import TableFilterDropdown from "./table-filter-dropdown/FilterDropdown";
 import IconButton from "@/components/icon-button/IconButton";
 import TableGroupByDropdown from "./table-group-by-dropdown/TableGroupByDropdown";
 import KanbanGroupByDropdown from "./kanban-group-by-dropdown/KanbanGroupByDropdown";
+import { ThemeToggle } from "./components/theme-toggle/ThemeToggle";
 
 const TaskNavbar = () => {
   const { search } = useLocation();
@@ -89,10 +89,10 @@ const TaskNavbar = () => {
 
   return (
     <nav aria-label="My task navbar" className="bg-background border-b px-4">
-      <div className="flex justify-between items-center pt-4 pb-2">
-        <div className="flex gap-2 items-center">
-          <SidebarTrigger className="-ml-1" />
-          <h3 className="font-medium">My Tasks</h3>
+      <div className="flex justify-between items-center pt-3 pb-2">
+        <div className="flex gap-4 items-center">
+          <h1 className="text-[20px] font-medium">My Tasks</h1>
+          <ThemeToggle />
         </div>
         <div className="flex gap-5 max-sm:gap-3">
           <DropdownMenu>

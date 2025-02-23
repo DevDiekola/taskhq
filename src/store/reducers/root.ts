@@ -1,12 +1,10 @@
-import { combineReducers } from '@reduxjs/toolkit';
-import taskReducer from '@/features/task/taskSlice';
-import userReducer from '@/features/user/userSlice';
-import workspaceReducer from '@/features/workspace/workspaceSlice';
+import { combineReducers } from "@reduxjs/toolkit";
+import taskReducer from "@/features/task/taskSlice";
+import themeReducer from "@/features/theme/themeSlice";
 
 export const rootReducer = combineReducers({
   taskState: taskReducer,
-  userState: userReducer,
-  workspaceState: workspaceReducer,
+  themeState: themeReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

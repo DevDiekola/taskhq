@@ -27,13 +27,13 @@ const KanbanTask: React.FC<Props> = ({
   onDuplicate,
   onDelete,
 }) => {
-  const fieldColors =
+  const groupClassNames =
     groupBy === "status"
       ? getPriorityClassNames(task.priority)
       : getStatusClassNames(task.status);
 
   return (
-    <div className="bg-white dark:bg-sidebar border p-3 pb-5 rounded-md my-3 cursor-pointer">
+    <div className="bg-kanban border p-3 pb-5 rounded-md my-3 cursor-pointer">
       <div className="flex gap-3 items-start">
         {/* I'd have preferred to have this checkbox appear only when the task div is hovered (looks nicer imo) 
         but that impacts accessibility so I'm happy to live with that tradeoff */}
@@ -66,7 +66,7 @@ const KanbanTask: React.FC<Props> = ({
           </div>
           <Badge
             variant="outline"
-            className={cn(Object.values(fieldColors), "mt-3")}
+            className={cn(Object.values(groupClassNames), "mt-3")}
           >
             {groupBy === "priority"
               ? toTitleCase(task.status)

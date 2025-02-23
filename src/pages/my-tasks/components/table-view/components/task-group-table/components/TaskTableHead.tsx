@@ -26,9 +26,7 @@ const TaskTableHead: React.FC<Prop> = ({
             <LucideArrowUpZA
               size={18}
               className={
-                sortColumn === column
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                sortColumn === column ? "text-gray-800" : "text-gray-300"
               }
             />
           </IconButton>
@@ -37,9 +35,7 @@ const TaskTableHead: React.FC<Prop> = ({
             <LucideArrowDownAZ
               size={18}
               className={
-                sortColumn === column
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                sortColumn === column ? "text-gray-800" : "text-gray-300"
               }
             />
           </IconButton>

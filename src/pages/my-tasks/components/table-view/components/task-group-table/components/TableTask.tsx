@@ -1,8 +1,11 @@
 import IconButton from "@/components/icon-button/IconButton";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Task, TaskGroupBy } from "@/features/task/taskModel";
+import { cn } from "@/lib/utils";
 import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
+import { getPriorityClassNames, getStatusClassNames } from "@/utils/color";
 import { toTitleCase } from "@/utils/string";
 import { MoreHorizontalIcon } from "lucide-react";
 
@@ -25,6 +28,9 @@ const TableTask: React.FC<Props> = ({
   onDuplicate,
   onDelete,
 }) => {
+  const statusClassNames = getStatusClassNames(task.status);
+  const priorityClassNames = getPriorityClassNames(task.priority);
+
   return (
     <TableRow key={task.id} className="cursor-pointer">
       <TableCell>
@@ -33,12 +39,22 @@ const TableTask: React.FC<Props> = ({
       <TableCell className="font-medium">{task.title}</TableCell>
       {groupBy !== "status" && (
         <TableCell className="items-center justify-center">
-          {toTitleCase(task.status)}
+          <Badge
+            variant="outline"
+            className={cn(Object.values(statusClassNames))}
+          >
+            {toTitleCase(task.status)}
+          </Badge>
         </TableCell>
       )}
       {groupBy !== "priority" && (
         <TableCell className="items-center justify-center">
-          {toTitleCase(task.priority)}
+          <Badge
+            variant="outline"
+            className={cn(Object.values(priorityClassNames))}
+          >
+            {toTitleCase(task.priority)}
+          </Badge>
         </TableCell>
       )}
       <TableCell>

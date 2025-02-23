@@ -31,6 +31,7 @@ import KanbanTask from "./components/KanbanTask";
 import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropdown";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
 import { orderKanbanTask } from "@/utils/task";
+import { MotionDiv } from "@/components/icon-button/Motion";
 
 type Props = {
   group: KanbanTaskGroup;
@@ -53,6 +54,8 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
   const { name: groupName, tasks } = group;
 
   const orderedTasks = orderKanbanTask(tasks, groupBy, groupName, order);
+
+  const [lastAddedTaskID, setLastAddedTaskID] = useState<number>();
 
   const handleCreateTaskModalOpen = () => {
     if (groupBy === "status") {
@@ -208,6 +211,9 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
       <div className="flex flex-col flex-1 w-full rounded-sm p-3 pt-0 overflow-y-auto">
         <ReactSortable
           list={orderedTasks.map((t) => {
+            // Returning a copy of each task because ReactSortable adds a new "chosen" field directly to each
+            // (took a bit of not so pleasant debugging to realize this, lol).
+            // We don't want it modifying the original tasks as they are not extensible (leads to runtime error).
             return { ...t };
           })}
           setList={(newTaskList, sortable) => {
@@ -237,6 +243,19 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
               // We only need to handle the case where the task is added to the column (newOrder > oldOrder)
               // This is to prevent redundant task re-ordering and state history changes.
               return;
+            }
+
+            // Getting the task IDs of tasks that are being moved into this column (lastAddedTaskIDs)
+            // This should contain just one ID since we're only moving one task at a time
+            // (bulk drag and drop was very finicky to get working and since there was a bulk action dropdown that could do this, I decided to let go of it)
+            // Using Set for efficiency
+            const lastAddedTaskIDs = newOrder.filter(
+              (num) => !new Set(oldOrder).has(num)
+            );
+
+            if (lastAddedTaskIDs.length > 0) {
+              console.log("lastAddedTaskIDs", lastAddedTaskIDs);
+              setLastAddedTaskID(lastAddedTaskIDs[0]);
             }
 
             const tasksToUpdate: Task[] = [];
@@ -274,19 +293,44 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
           className="flex-1"
           swap={true}
         >
-          {orderedTasks.map((task) => {
+          {orderedTasks.map((task, index) => {
             const isChecked = bulkActionTaskIDs.includes(task.id);
+
+            if (task.id === lastAddedTaskID) {
+              // This is the task that was just added to the column
+              // We don't want the motion animation applied to it. Trust me, we don't.
+              return (
+                <KanbanTask
+                  key={task.id}
+                  task={task}
+                  groupBy={groupBy}
+                  isChecked={isChecked}
+                  onCheckedChange={() => handleToggleTaskSelection(task.id)}
+                  onEdit={handleUpdateTaskModalOpen}
+                  onDuplicate={handleDuplicateTask}
+                  onDelete={handleShowDeleteTaskModal}
+                />
+              );
+            }
+
             return (
-              <KanbanTask
+              <MotionDiv
                 key={task.id}
-                task={task}
-                groupBy={groupBy}
-                isChecked={isChecked}
-                onCheckedChange={() => handleToggleTaskSelection(task.id)}
-                onEdit={handleUpdateTaskModalOpen}
-                onDuplicate={handleDuplicateTask}
-                onDelete={handleShowDeleteTaskModal}
-              />
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 100 }}
+                transition={{ duration: 0.5, delay: 0.2 * index }}
+              >
+                <KanbanTask
+                  task={task}
+                  groupBy={groupBy}
+                  isChecked={isChecked}
+                  onCheckedChange={() => handleToggleTaskSelection(task.id)}
+                  onEdit={handleUpdateTaskModalOpen}
+                  onDuplicate={handleDuplicateTask}
+                  onDelete={handleShowDeleteTaskModal}
+                />
+              </MotionDiv>
             );
           })}
         </ReactSortable>
