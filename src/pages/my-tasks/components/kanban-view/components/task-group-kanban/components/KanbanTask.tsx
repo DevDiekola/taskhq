@@ -1,16 +1,16 @@
-import IconButton from "@/components/icon-button/IconButton";
 import { MoreHorizontalIcon } from "lucide-react";
-import { Task, ViewGroupBy } from "@/features/task/taskModel";
+import { Task, TaskGroupBy } from "@/features/task/taskModel";
 import { Badge } from "@/components/ui/badge";
 import { toTitleCase } from "@/utils/string";
 import { getPriorityClassNames, getStatusClassNames } from "@/utils/color";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-import TaskActionsDropdown from "../../../../task-actions-dropdown/TaskActionsDropdown";
+import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
+import IconButton from "@/components/icon-button/IconButton";
 
 type Props = {
   task: Task;
-  groupBy: ViewGroupBy;
+  groupBy: TaskGroupBy;
   isChecked: boolean;
   onCheckedChange: (checked: boolean) => void;
   onEdit: (task: Task) => void;
@@ -33,12 +33,14 @@ const KanbanTask: React.FC<Props> = ({
       : getStatusClassNames(task.status);
 
   return (
-    <div className="group bg-white dark:bg-sidebar border p-3 pb-5 rounded-md my-2 space-y-3 cursor-pointer">
+    <div className="bg-white dark:bg-sidebar border p-3 pb-5 rounded-md my-3 cursor-pointer">
       <div className="flex gap-3 items-start">
+        {/* I'd have preferred to have this checkbox appear only when the task div is hovered (looks nicer imo) 
+        but that impacts accessibility so I'm happy to live with that tradeoff */}
         <Checkbox
           checked={isChecked}
           onCheckedChange={onCheckedChange}
-          className={cn("hidden group-hover:block mt-1", isChecked && "block")}
+          className={cn("mt-1")}
         />
         <div className="flex-1">
           <div className="flex justify-between items-start">
@@ -51,12 +53,14 @@ const KanbanTask: React.FC<Props> = ({
               onDuplicate={onDuplicate}
               onDelete={onDelete}
             >
-              <IconButton className="align-bottom">
+              <IconButton
+                aria-label={`Task actions dropdown for ${task.title}`}
+                className="p-1 hover:bg-muted"
+              >
                 <MoreHorizontalIcon
                   size={18}
                   className="text-muted-foreground"
                 />
-                <span className="sr-only">More task actions</span>
               </IconButton>
             </TaskActionsDropdown>
           </div>

@@ -87,13 +87,13 @@ const CreateUpdateTaskModal: React.FC<Props> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[90%] md:w-[500px]">
+      <DialogContent className="w-[90%] md:w-[500px] rounded-lg">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col w-full justify-start gap-10"
           >
-            <DialogHeader>
+            <DialogHeader className="text-left">
               <DialogTitle className="text-[20px] font-medium">
                 {task?.id ? "Update task" : "Create new task"}
               </DialogTitle>

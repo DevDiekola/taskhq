@@ -33,7 +33,7 @@ const BulkActionsDropdown: React.FC<Props> = ({
 }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger disabled={taskIDs.length === 0} asChild>
+      <DropdownMenuTrigger asChild disabled={taskIDs.length === 0}>
         {children}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-52">

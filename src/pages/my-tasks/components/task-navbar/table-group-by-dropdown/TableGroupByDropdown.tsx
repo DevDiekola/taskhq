@@ -4,22 +4,22 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VIEW_GROUP_BY } from "@/constants/task";
-import { ViewGroupBy } from "@/features/task/taskModel";
+import { TASK_GROUPS } from "@/constants/task";
+import { TaskGroupBy } from "@/features/task/taskModel";
 import { setTableGroupBy } from "@/features/task/taskSlice";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { toTitleCase } from "@/utils/string";
-import { GroupIcon } from "lucide-react";
+import { GridIcon } from "lucide-react";
 import { useDispatch } from "react-redux";
 
-const TableGroupBy = () => {
+const TableGroupByDropdown = () => {
   const {
     tableView: { groupBy },
   } = useAppSelector((state) => state.taskState.present);
 
   const dispatch = useDispatch();
 
-  const handleSetGroupBy = (groupBy: ViewGroupBy, checked: boolean) => {
+  const handleSetGroupBy = (groupBy: TaskGroupBy, checked: boolean) => {
     const groupByValue = checked ? groupBy : undefined;
 
     dispatch(setTableGroupBy(groupByValue));
@@ -28,15 +28,24 @@ const TableGroupBy = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
-          <GroupIcon size={13} className="mb-1" />
+        <button
+          aria-label="Group by dropdown"
+          className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer"
+        >
+          <GridIcon size={17} className="mb-1" />
           <span className="font-medium">
-            Group By{groupBy ? `: ${toTitleCase(groupBy)}` : ""}
+            {groupBy ? (
+              toTitleCase(groupBy)
+            ) : (
+              <span>
+                Group<span className="max-sm:hidden"> By</span>
+              </span>
+            )}
           </span>
-        </div>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-52">
-        {VIEW_GROUP_BY.map((newGroup) => (
+        {TASK_GROUPS.map((newGroup) => (
           <DropdownMenuCheckboxItem
             key={newGroup}
             checked={newGroup === groupBy}
@@ -50,4 +59,4 @@ const TableGroupBy = () => {
   );
 };
 
-export default TableGroupBy;
+export default TableGroupByDropdown;

@@ -1,14 +1,14 @@
 import IconButton from "@/components/icon-button/IconButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
-import { Task, ViewGroupBy } from "@/features/task/taskModel";
+import { Task, TaskGroupBy } from "@/features/task/taskModel";
 import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
 import { toTitleCase } from "@/utils/string";
 import { MoreHorizontalIcon } from "lucide-react";
 
 type Props = {
   task: Task;
-  groupBy?: ViewGroupBy;
+  groupBy?: TaskGroupBy;
   isChecked: boolean;
   onCheckedChange: (checked: boolean) => void;
   onEdit: (task: Task) => void;
@@ -48,9 +48,11 @@ const TableTask: React.FC<Props> = ({
           onDuplicate={onDuplicate}
           onDelete={onDelete}
         >
-          <IconButton>
+          <IconButton
+            aria-label={`Task actions dropdown for ${task.title}`}
+            className="p-1 hover:bg-muted"
+          >
             <MoreHorizontalIcon size={18} className="text-muted-foreground" />
-            <span className="sr-only">Task actions</span>
           </IconButton>
         </TaskActionsDropdown>
       </TableCell>

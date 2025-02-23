@@ -5,41 +5,50 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VIEW_GROUP_BY } from "@/constants/task";
-import { ViewGroupBy } from "@/features/task/taskModel";
+import { TASK_GROUPS } from "@/constants/task";
+import { TaskGroupBy } from "@/features/task/taskModel";
 import { setKanbanGroupBy } from "@/features/task/taskSlice";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { toTitleCase } from "@/utils/string";
-import { GroupIcon } from "lucide-react";
+import { GridIcon } from "lucide-react";
 import { useDispatch } from "react-redux";
 
-const KanbanGroupBy = () => {
+const KanbanGroupByDropdown = () => {
   const {
     kanbanView: { groupBy },
   } = useAppSelector((state) => state.taskState.present);
 
   const dispatch = useDispatch();
 
-  const handleSetGroupBy = (groupBy: ViewGroupBy) => {
+  const handleSetGroupBy = (groupBy: TaskGroupBy) => {
     dispatch(setKanbanGroupBy(groupBy));
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer">
-          <GroupIcon size={13} className="mb-1" />
+        <button
+          aria-label="Group by dropdown"
+          className="flex items-center gap-1 text-muted-foreground py-2 cursor-pointer"
+        >
+          <GridIcon size={17} className="mb-1" />
           <span className="font-medium">
-            Group By{groupBy ? `: ${toTitleCase(groupBy)}` : ""}
+            {groupBy ? (
+              toTitleCase(groupBy)
+            ) : (
+              <span>
+                Group<span className="max-sm:hidden"> By</span>
+              </span>
+            )}
           </span>
-        </div>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-52">
         <DropdownMenuRadioGroup
           value={groupBy}
-          onValueChange={(value) => handleSetGroupBy(value as ViewGroupBy)}
+          onValueChange={(value) => handleSetGroupBy(value as TaskGroupBy)}
         >
-          {VIEW_GROUP_BY.map((groupBy) => (
+          {TASK_GROUPS.map((groupBy) => (
             <DropdownMenuRadioItem key={groupBy} value={groupBy}>
               {toTitleCase(groupBy)}
             </DropdownMenuRadioItem>
@@ -50,4 +59,4 @@ const KanbanGroupBy = () => {
   );
 };
 
-export default KanbanGroupBy;
+export default KanbanGroupByDropdown;

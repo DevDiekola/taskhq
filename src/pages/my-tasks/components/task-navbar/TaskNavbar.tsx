@@ -1,14 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ChevronDownIcon, PlusIcon, RotateCcw, RotateCw } from "lucide-react";
+import {
+  ChevronDownIcon,
+  PlusIcon,
+  RotateCcwIcon,
+  RotateCwIcon,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { ViewID } from "./models/navbarModel";
 import { views } from "@/constants/view";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useDispatch } from "react-redux";
 import { createTask, seedTasks } from "@/features/task/taskSlice";
-import { TaskPayload } from "@/features/task/taskModel";
+import { TaskPayload, ViewID } from "@/features/task/taskModel";
 import {
   Tooltip,
   TooltipContent,
@@ -17,8 +21,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useState } from "react";
 import CreateUpdateTaskModal from "../create-task-modal/CreateUpdateTaskModal";
-import TableGroupBy from "./table-group-by/TableGroupBy";
-import KanbanGroupBy from "./kanban-group-by/KanbanGroupBy";
 import SeedTaskModal from "../seed-task-modal/SeedTaskModal";
 import {
   DropdownMenu,
@@ -31,6 +33,10 @@ import {
   REDO_TASK_ACTION,
   UNDO_TASK_ACTION,
 } from "@/constants/task";
+import TableFilterDropdown from "./table-filter-dropdown/FilterDropdown";
+import IconButton from "@/components/icon-button/IconButton";
+import TableGroupByDropdown from "./table-group-by-dropdown/TableGroupByDropdown";
+import KanbanGroupByDropdown from "./kanban-group-by-dropdown/KanbanGroupByDropdown";
 
 const TaskNavbar = () => {
   const { search } = useLocation();
@@ -88,7 +94,7 @@ const TaskNavbar = () => {
           <SidebarTrigger className="-ml-1" />
           <h3 className="font-medium">My Tasks</h3>
         </div>
-        <div className="flex gap-5">
+        <div className="flex gap-5 max-sm:gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="px-5">
@@ -109,15 +115,15 @@ const TaskNavbar = () => {
           </DropdownMenu>
           <Button
             onClick={() => setIsCreateTaskModalOpen(true)}
-            className="px-5"
+            className="px-4"
           >
-            <span>New task</span>
+            <span className="max-sm:hidden">New task</span>
             <PlusIcon />
           </Button>
         </div>
       </div>
       <div className="flex justify-between">
-        <div className="flex gap-5 text-[15px]">
+        <div className="flex gap-5 max-sm:gap-3 text-[15px]">
           {views.map((view) => (
             <Link key={view.id} to={`/my-tasks?view=${view.id}`}>
               <div
@@ -132,20 +138,21 @@ const TaskNavbar = () => {
             </Link>
           ))}
         </div>
-
-        <div className="flex items-center gap-10">
-          <div className="flex gap-5">
+        <div className="flex items-center gap-10 max-sm:gap-5">
+          <div className="flex gap-5 max-sm:hidden">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <RotateCcw
-                    onClick={() => dispatch(UNDO_TASK_ACTION)}
-                    size={20}
-                    className={cn(
-                      "cursor-pointer",
-                      pastState.length === 0 && "opacity-50"
-                    )}
-                  />
+                <TooltipTrigger asChild disabled={pastState.length === 0}>
+                  <IconButton aria-label="Undo last action">
+                    <RotateCcwIcon
+                      onClick={() => dispatch(UNDO_TASK_ACTION)}
+                      size={20}
+                      className={cn(
+                        "cursor-pointer",
+                        pastState.length === 0 && "opacity-50"
+                      )}
+                    />
+                  </IconButton>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Undo last action</p>
@@ -154,15 +161,17 @@ const TaskNavbar = () => {
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <RotateCw
-                    onClick={() => dispatch(REDO_TASK_ACTION)}
-                    size={20}
-                    className={cn(
-                      "cursor-pointer",
-                      futureState.length === 0 && "opacity-50"
-                    )}
-                  />
+                <TooltipTrigger asChild disabled={futureState.length === 0}>
+                  <IconButton aria-label="Redo last action">
+                    <RotateCwIcon
+                      onClick={() => dispatch(REDO_TASK_ACTION)}
+                      size={20}
+                      className={cn(
+                        "cursor-pointer",
+                        futureState.length === 0 && "opacity-50"
+                      )}
+                    />
+                  </IconButton>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Redo last action</p>
@@ -170,7 +179,37 @@ const TaskNavbar = () => {
               </Tooltip>
             </TooltipProvider>
           </div>
-          {activeViewID === "table" ? <TableGroupBy /> : <KanbanGroupBy />}
+          {activeViewID === "table" ? (
+            <TableGroupByDropdown />
+          ) : (
+            <KanbanGroupByDropdown />
+          )}
+          <TableFilterDropdown viewID={activeViewID} />
+        </div>
+        <div className="sm:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <RotateCcwIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="min-w-52">
+              <DropdownMenuItem
+                disabled={pastState.length === 0}
+                onClick={() => dispatch(UNDO_TASK_ACTION)}
+              >
+                <RotateCcwIcon size={17} />
+                <span>Undo last action</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={futureState.length === 0}
+                onClick={() => dispatch(REDO_TASK_ACTION)}
+              >
+                <RotateCwIcon size={17} />
+                <span>Redo last action</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       {isCreateTaskModalOpen && (

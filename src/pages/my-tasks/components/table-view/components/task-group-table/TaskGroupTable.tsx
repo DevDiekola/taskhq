@@ -1,14 +1,24 @@
+import IconButton from "@/components/icon-button/IconButton";
 import {
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  Table,
+} from "@/components/ui/table";
+import {
+  TableViewSort,
   Task,
-  TaskGroup,
   TaskPayload,
   TaskPriority,
   TaskStatus,
-  ViewGroupBy,
-  ViewSortColumn,
-  ViewSortOrder,
+  TaskGroupBy,
+  TaskSortColumn,
+  TaskSortOrder,
+  TableTaskGroup,
 } from "@/features/task/taskModel";
-import { MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
+import Paginator from "../paginator/Paginator";
 import { useState } from "react";
 import { toTitleCase } from "@/utils/string";
 import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-task-modal/CreateUpdateTaskModal";
@@ -18,26 +28,47 @@ import {
   bulkSetTaskPriority,
   bulkSetTaskStatus,
   createTask,
+  setTableSort,
   updateTask,
 } from "@/features/task/taskSlice";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
+import TaskTableHead from "./components/TaskTableHead";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UNDO_TASK_ACTION } from "@/constants/task";
-import { ReactSortable } from "react-sortablejs";
-import KanbanTask from "./components/KanbanTask";
+import TableTask from "./components/TableTask";
 import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropdown";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
-  group: TaskGroup;
-  groupBy: ViewGroupBy;
-  sortColumn?: ViewSortColumn;
-  sortOrder?: ViewSortOrder;
+  group: TableTaskGroup;
+  groupBy?: TaskGroupBy;
+  sortColumn?: TaskSortColumn;
+  sortOrder?: TaskSortOrder;
+  defaultCurrentPage?: number;
+  defaultPageSize?: number;
 };
 
-const KanbanTaskGroup: React.FC<Props> = ({ group, groupBy }) => {
+const TaskGroupTable: React.FC<Props> = ({
+  group,
+  groupBy,
+  sortColumn,
+  sortOrder,
+  defaultCurrentPage = 1,
+  defaultPageSize = 10,
+}) => {
+  const dispatch = useDispatch();
+
+  const [currentPage, setCurrentPage] = useState(defaultCurrentPage);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+
   const [isSaveTaskModalOpen, setIsSaveTaskModalOpen] = useState(false);
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
 
@@ -49,7 +80,17 @@ const KanbanTaskGroup: React.FC<Props> = ({ group, groupBy }) => {
 
   const { name: groupName, tasks } = group;
 
-  const dispatch = useDispatch();
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedTasks = tasks.slice(startIndex, startIndex + pageSize);
+
+  const handleSort = (newSortColumn: TaskSortColumn) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    const viewSort: TableViewSort = {
+      sortColumn: newSortColumn,
+      sortOrder: newSortOrder,
+    };
+    dispatch(setTableSort(viewSort));
+  };
 
   const handleCreateTaskModalOpen = () => {
     if (groupBy === "status") {
@@ -158,102 +199,106 @@ const KanbanTaskGroup: React.FC<Props> = ({ group, groupBy }) => {
   };
 
   return (
-    <div
-      data-group-name={groupName}
-      className="flex flex-col flex-shrink-0 w-[300px] h-[calc(100dvh-120px)] bg-muted dark:bg-gray rounded-sm"
-    >
-      <div className="flex justify-between items-center px-4 py-3">
-        <div className="flex gap-3 items-center">
-          {/* Again, only using the checkbox from shadcn for the uniform look.
-          I'm not too lazy to write an HTML input checkbox 😭💀 */}
-          <Checkbox
-            checked={getIsWholeGroupSelected()}
-            onCheckedChange={handleToggleGroupSelection}
-          />
-          <span>{toTitleCase(groupName)}</span>
-          <span className="text-muted-foreground">({tasks.length})</span>
+    <div className="sm:px-4 sm:py-3">
+      <div className="flex justify-between items-center">
+        <div className="flex gap-7 items-center">
+          <div className="flex gap-2 items-center">
+            <span className="text-[18px]">{toTitleCase(groupName)}</span>
+            <span className="text-muted-foreground">({tasks.length})</span>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IconButton
+                  aria-label={`Create new task with ${groupName} ${groupBy}`}
+                  className="p-1 hover:bg-muted"
+                  onClick={handleCreateTaskModalOpen}
+                >
+                  <PlusIcon size={18} className="text-muted-foreground" />
+                </IconButton>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add new task</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleCreateTaskModalOpen}
-            variant="outline"
-            size="sm"
-          >
-            <PlusIcon />
-            {bulkActionTaskIDs.length === 0 && <span>Add Task</span>}
-          </Button>
-          {bulkActionTaskIDs.length > 0 && (
-            <BulkActionsDropdown
-              taskIDs={bulkActionTaskIDs}
-              onSetStatus={handleBulkSetTaskStatus}
-              onSetPriority={handleBulkSetTaskPriority}
-              onBulkDelete={handleShowDeleteTaskModal}
-            >
-              <Button
-                onClick={handleCreateTaskModalOpen}
-                variant="outline"
-                size="sm"
-              >
-                <MoreHorizontalIcon />
-              </Button>
-            </BulkActionsDropdown>
-          )}
-        </div>
-      </div>
-      <div className="flex flex-col flex-1 w-full rounded-sm p-3 pt-0 overflow-y-auto">
-        <ReactSortable
-          list={tasks.map((t) => {
-            return { ...t };
-          })}
-          setList={(movingTasks, sortable) => {
-            if (!sortable) {
-              return;
-            }
-
-            const newStageName = sortable.el
-              .closest("[data-group-name]")
-              ?.getAttribute("data-group-name");
-
-            if (!newStageName) {
-              return;
-            }
-
-            for (let i = 0; i < movingTasks.length; i++) {
-              const task = { ...movingTasks[i] };
-
-              if (groupBy === "status") {
-                task.status = newStageName as TaskStatus;
-              } else if (groupBy === "priority") {
-                task.priority = newStageName as TaskPriority;
-              }
-
-              dispatch(updateTask(task));
-            }
-          }}
-          animation={200}
-          group={{ name: "shared", pull: true, put: true }}
-          ghostClass="sortable-ghost"
-          dragClass="sortable-drag"
-          className="connect-sorting-content flex-1"
-          multiDrag
-          swap
+        <BulkActionsDropdown
+          taskIDs={bulkActionTaskIDs}
+          onSetStatus={handleBulkSetTaskStatus}
+          onSetPriority={handleBulkSetTaskPriority}
+          onBulkDelete={handleShowDeleteTaskModal}
         >
-          {tasks.map((task) => {
-            return (
-              <KanbanTask
-                key={task.id}
-                task={task}
-                groupBy={groupBy}
-                isChecked={bulkActionTaskIDs.includes(task.id)}
-                onCheckedChange={() => handleToggleTaskSelection(task.id)}
-                onEdit={handleUpdateTaskModalOpen}
-                onDuplicate={handleDuplicateTask}
-                onDelete={handleShowDeleteTaskModal}
-              />
-            );
-          })}
-        </ReactSortable>
+          <Button variant="secondary">
+            <span>Bulk actions</span>
+            <ChevronDownIcon />
+          </Button>
+        </BulkActionsDropdown>
       </div>
+      <Table className="mt-6">
+        <TableHeader>
+          <TableRow>
+            <TableHead>
+              {/* Only using the checkbox from shadcn for the uniform look.
+              I'm not too lazy to write an HTML input checkbox 😭💀 */}
+              <Checkbox
+                checked={getIsWholeGroupSelected()}
+                onCheckedChange={handleToggleGroupSelection}
+              />
+            </TableHead>
+            <TaskTableHead
+              column="title"
+              sortColumn={sortColumn}
+              sortOrder={sortOrder}
+              onClick={() => handleSort("title")}
+            />
+            {groupBy !== "status" && (
+              <TaskTableHead
+                column="status"
+                sortColumn={sortColumn}
+                sortOrder={sortOrder}
+                onClick={() => handleSort("status")}
+              />
+            )}
+            {groupBy !== "priority" && (
+              <TaskTableHead
+                column="priority"
+                sortColumn={sortColumn}
+                sortOrder={sortOrder}
+                onClick={() => handleSort("priority")}
+              />
+            )}
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {paginatedTasks.map((task) => (
+            <TableTask
+              key={task.id}
+              task={task}
+              groupBy={groupBy}
+              isChecked={bulkActionTaskIDs.includes(task.id)}
+              onCheckedChange={() => handleToggleTaskSelection(task.id)}
+              onEdit={handleUpdateTaskModalOpen}
+              onDuplicate={handleDuplicateTask}
+              onDelete={handleShowDeleteTaskModal}
+            />
+          ))}
+        </TableBody>
+      </Table>
+      {bulkActionTaskIDs.length > 0 && (
+        <p className="mt-7">
+          Selected {bulkActionTaskIDs.length} of {tasks.length} tasks
+        </p>
+      )}
+      <Paginator
+        currentPage={currentPage}
+        totalItems={tasks.length}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        pageSizeOptions={[5, 10, 20, 50]}
+      />
       {isSaveTaskModalOpen && (
         <CreateUpdateTaskModal
           isOpen={isSaveTaskModalOpen}
@@ -276,4 +321,4 @@ const KanbanTaskGroup: React.FC<Props> = ({ group, groupBy }) => {
   );
 };
 
-export default KanbanTaskGroup;
+export default TaskGroupTable;

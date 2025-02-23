@@ -1,8 +1,8 @@
-import { TaskStatus, TaskPriority, Task, ViewGroupBy } from "@/features/task/taskModel";
+import { TaskStatus, TaskPriority, Task, TaskGroupBy } from "@/features/task/taskModel";
 import { PayloadAction } from "@reduxjs/toolkit";
 
-export const GROUP_BY_STATUS: ViewGroupBy = "status";
-export const GROUP_BY_PRIORITY: ViewGroupBy = "priority";
+export const GROUP_BY_STATUS: TaskGroupBy = "status";
+export const GROUP_BY_PRIORITY: TaskGroupBy = "priority";
 
 export const TASK_SLICE_NAME = "task";
 
@@ -13,7 +13,7 @@ export const KANBAN_VIEW_LOCAL_STORAGE_KEY = "kanban-view";
 export const TASK_STATUSES: ReadonlyArray<TaskStatus> = ["not_started", "in_progress", "completed"];
 export const TASK_PRIORITIES: ReadonlyArray<TaskPriority> = ["none", "low", "medium", "high", "urgent"];
 
-export const VIEW_GROUP_BY: ReadonlyArray<ViewGroupBy> = ["status", "priority"];
+export const TASK_GROUPS: ReadonlyArray<TaskGroupBy> = ["status", "priority"];
 
 export const STATUS_CLASS_NAMES: Readonly<Record<TaskStatus, { background: string; foreground: string }>> = {
   not_started: { background: 'bg-gray-200', foreground: 'text-gray-800' },

@@ -1,42 +1,32 @@
-import { TaskGroup } from "@/features/task/taskModel";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useEffect, useState } from "react";
-import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
-import KanbanTaskGroup from "./components/task-group-column/KanbanTaskGroup";
+import { KanbanTaskGroup } from "@/features/task/taskModel";
+import TaskGroupKanban from "./components/task-group-kanban/TaskGroupKanban";
+import { filterTasks, groupKanbanTasks } from "@/utils/task";
 
 const KanbanView = () => {
   const {
     tasks: allTasks,
-    kanbanView: { groupBy },
+    kanbanView: { groupBy, order, filter },
   } = useAppSelector((state) => state.taskState.present);
 
-  const [taskGroups, setTaskGroups] = useState<TaskGroup[]>([]);
+  const [taskGroups, setTaskGroups] = useState<KanbanTaskGroup[]>([]);
 
   useEffect(() => {
-    let newTaskGroups: TaskGroup[] = [];
+    const filteredTasks = filterTasks(allTasks, filter);
+    const taskGroups = groupKanbanTasks(filteredTasks, groupBy);
 
-    if (groupBy === "priority") {
-      newTaskGroups = TASK_PRIORITIES.map((priority) => ({
-        name: priority,
-        tasks: allTasks.filter((t) => t.priority === priority),
-      }));
-    } else {
-      newTaskGroups = TASK_STATUSES.map((status) => ({
-        name: status,
-        tasks: allTasks.filter((t) => t.status === status),
-      }));
-    }
-
-    setTaskGroups(newTaskGroups);
-  }, [allTasks, groupBy]);
+    setTaskGroups(taskGroups);
+  }, [allTasks, filter, groupBy]);
 
   return (
     <div className="flex overflow-x-auto gap-4 p-4">
       {taskGroups.map((group) => (
-        <KanbanTaskGroup
+        <TaskGroupKanban
           key={group.name} // group name is expected to be unique across all groups
           group={group}
           groupBy={groupBy}
+          order={order}
         />
       ))}
     </div>

@@ -26,7 +26,7 @@ const TaskActionsDropdown: React.FC<Prop> = ({
 }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-52">
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => onEdit(task)}>

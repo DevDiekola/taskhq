@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from "react";
+import { JSX } from "react";
 import { useLocation } from "react-router-dom";
 import { ViewID } from "./components/task-navbar/models/navbarModel";
 import TableView from "./components/table-view/TableView";
@@ -12,16 +12,10 @@ const MyTasks = () => {
 
   const viewID = queryParams.get("view");
 
-  const [activeViewID, setActiveViewID] = useState<ViewID>("table");
+  const activeViewID = viewID === "kanban" ? "kanban" : "table";
 
   // Enables task action undo/redo using keyboard shortcuts
   useUndoRedoShortcut();
-
-  useEffect(() => {
-    if (viewID) {
-      setActiveViewID(viewID as ViewID);
-    }
-  }, [viewID]);
 
   const viewPages: Record<ViewID, JSX.Element> = {
     table: <TableView />,
@@ -31,7 +25,7 @@ const MyTasks = () => {
   return (
     <div>
       <TaskNavbar />
-      {viewPages[activeViewID] || <h3>Ooops, wrong page</h3>}
+      {viewPages[activeViewID]}
     </div>
   );
 };

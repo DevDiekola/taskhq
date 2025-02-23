@@ -1,25 +1,26 @@
 import { cn } from "@/lib/utils";
+import React from "react";
 
-const IconButton = ({
-  children,
-  className,
-  onClick,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
-}) => {
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+const IconButton = React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
   return (
-    <div
-      onClick={onClick}
+    <button
+      ref={ref}
+      type="button"
+      // aria-label={ariaLabel}
+      // onClick={onClick}
+      {...props}
       className={cn(
-        "rounded-md p-1 duration-100 ease-in hover:bg-muted cursor-pointer",
-        className
+        "rounded-md duration-200 ease-in-out cursor-pointer",
+        props.className
       )}
     >
-      {children}
-    </div>
+      {props.children}
+    </button>
   );
-};
+});
+
+IconButton.displayName = "IconButton";
 
 export default IconButton;
