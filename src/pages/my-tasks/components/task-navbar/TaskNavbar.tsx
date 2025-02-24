@@ -19,7 +19,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
-import CreateUpdateTaskModal from "../create-task-modal/CreateUpdateTaskModal";
+import CreateUpdateTaskModal from "../create-update-task-modal/CreateUpdateTaskModal";
 import SeedTaskModal from "../seed-task-modal/SeedTaskModal";
 import {
   DropdownMenu,
@@ -32,11 +32,11 @@ import {
   REDO_TASK_ACTION,
   UNDO_TASK_ACTION,
 } from "@/constants/task";
-import TableFilterDropdown from "./table-filter-dropdown/FilterDropdown";
 import IconButton from "@/components/icon-button/IconButton";
 import TableGroupByDropdown from "./table-group-by-dropdown/TableGroupByDropdown";
 import KanbanGroupByDropdown from "./kanban-group-by-dropdown/KanbanGroupByDropdown";
 import { ThemeToggle } from "./components/theme-toggle/ThemeToggle";
+import FilterDropdown from "./table-filter-dropdown/FilterDropdown";
 
 const TaskNavbar = () => {
   const { search } = useLocation();
@@ -57,7 +57,7 @@ const TaskNavbar = () => {
 
   const {
     past: pastState,
-    present: { tasks },
+    present: { tasks, tableView, kanbanView, customFields },
     future: futureState,
   } = useAppSelector((state) => state.taskState);
 
@@ -117,7 +117,7 @@ const TaskNavbar = () => {
             onClick={() => setIsCreateTaskModalOpen(true)}
             className="px-4"
           >
-            <span className="max-sm:hidden">New task</span>
+            <span className="max-sm:hidden">Add Task</span>
             <PlusIcon />
           </Button>
         </div>
@@ -149,7 +149,7 @@ const TaskNavbar = () => {
                       size={20}
                       className={cn(
                         "cursor-pointer",
-                        pastState.length === 0 && "opacity-50"
+                        pastState.length === 0 ? "opacity-50" : ""
                       )}
                     />
                   </IconButton>
@@ -168,7 +168,7 @@ const TaskNavbar = () => {
                       size={20}
                       className={cn(
                         "cursor-pointer",
-                        futureState.length === 0 && "opacity-50"
+                        futureState.length === 0 ? "opacity-50" : ""
                       )}
                     />
                   </IconButton>
@@ -180,11 +180,16 @@ const TaskNavbar = () => {
             </TooltipProvider>
           </div>
           {activeViewID === "table" ? (
-            <TableGroupByDropdown />
+            <TableGroupByDropdown groupBy={tableView.groupBy} />
           ) : (
-            <KanbanGroupByDropdown />
+            <KanbanGroupByDropdown groupBy={kanbanView.groupBy} />
           )}
-          <TableFilterDropdown viewID={activeViewID} />
+          <FilterDropdown
+            viewID={activeViewID}
+            tableView={tableView}
+            kanbanView={kanbanView}
+            customFields={customFields}
+          />
         </div>
         <div className="sm:hidden">
           <DropdownMenu>
@@ -215,6 +220,7 @@ const TaskNavbar = () => {
       {isCreateTaskModalOpen && (
         <CreateUpdateTaskModal
           isOpen={isCreateTaskModalOpen}
+          customFields={customFields}
           onSubmit={handleTaskCreate}
           onClose={() => setIsCreateTaskModalOpen(false)}
         />

@@ -12,32 +12,39 @@ import {
   KanbanOrderMap,
   ReOrderKanbanTasksPayload,
   TaskFilter,
+  CustomFieldPayload,
+  CustomField,
 } from "./taskModel";
 import {
+  CUSTOM_FIELDS_LOCAL_STORAGE_KEY,
   KANBAN_VIEW_LOCAL_STORAGE_KEY,
   MOCK_TASKS,
   TABLE_VIEW_LOCAL_STORAGE_KEY,
-  TASK_LOCAL_STORAGE_KEY,
+  TASKS_LOCAL_STORAGE_KEY,
   TASK_SLICE_NAME,
 } from "@/constants/task";
 import historyReducer from "@/store/reducers/history";
 
-const persistedTasksString = localStorage.getItem(TASK_LOCAL_STORAGE_KEY);
+const persistedTasksString = localStorage.getItem(TASKS_LOCAL_STORAGE_KEY);
 const persistedTableViewString = localStorage.getItem(
   TABLE_VIEW_LOCAL_STORAGE_KEY
 );
 const persistedKanbanViewString = localStorage.getItem(
   KANBAN_VIEW_LOCAL_STORAGE_KEY
 );
+const persistedCustomFieldsString = localStorage.getItem(
+  CUSTOM_FIELDS_LOCAL_STORAGE_KEY
+);
 
 const defaultTasks: Task[] = [];
-
 const defaultTableView: TableView = {};
 const defaultKanbanView: KanbanView = { groupBy: "priority" };
+const defaulCustomFields: CustomField[] = [];
 
 let persistedTasks = defaultTasks;
 let persistedTableView = defaultTableView;
 let persistedKanbanView = defaultKanbanView;
+let persistedCustomFields = defaulCustomFields;
 
 try {
   persistedTasks = persistedTasksString
@@ -63,10 +70,19 @@ try {
   console.error("Error parsing persistedKanbanView:", error);
 }
 
+try {
+  persistedCustomFields = persistedCustomFieldsString
+    ? JSON.parse(persistedCustomFieldsString)
+    : persistedCustomFields;
+} catch (error) {
+  console.error("Error parsing persistedCustomFields:", error);
+}
+
 const initialState: TaskState = {
   tasks: persistedTasks,
   tableView: persistedTableView,
   kanbanView: persistedKanbanView,
+  customFields: persistedCustomFields,
 };
 
 const taskSlice = createSlice({
@@ -88,15 +104,6 @@ const taskSlice = createSlice({
       state.tasks.push(task);
     },
     updateTask: (state, action: PayloadAction<TaskPayload>) => {
-      const index = state.tasks.findIndex(
-        (task) => task.id === action.payload.id
-      );
-      if (index === -1) {
-        return;
-      }
-      state.tasks[index] = action.payload as Task;
-    },
-    bulkUpdateTask: (state, action: PayloadAction<TaskPayload>) => {
       const index = state.tasks.findIndex(
         (task) => task.id === action.payload.id
       );
@@ -185,11 +192,62 @@ const taskSlice = createSlice({
         state.kanbanView.order = { ...state.kanbanView.order, statusOrder };
       }
     },
-    setTableFilter: (state, action: PayloadAction<TaskFilter>) => {
+    setTableFilter: (state, action: PayloadAction<TaskFilter | undefined>) => {
       state.tableView.filter = action.payload;
     },
-    setKanbanFilter: (state, action: PayloadAction<TaskFilter>) => {
+    setKanbanFilter: (state, action: PayloadAction<TaskFilter | undefined>) => {
       state.kanbanView.filter = action.payload;
+    },
+    createCustomField: (state, action: PayloadAction<CustomFieldPayload>) => {
+      // Again, getting the highest custom field ID plus one
+      // I'm assuming custom field IDs are sequential and are incremented by 1
+      const id =
+        state.customFields.reduce(
+          (max, customField) => (customField.id > max ? customField.id : max),
+          0
+        ) + 1;
+      const customField: CustomField = { ...action.payload, id };
+
+      state.customFields.push(customField);
+    },
+    updateCustomField: (state, action: PayloadAction<CustomFieldPayload>) => {
+      const index = state.customFields.findIndex(
+        (customField) => customField.id === action.payload.id
+      );
+      if (index === -1) {
+        return;
+      }
+      state.customFields[index] = action.payload as CustomField;
+    },
+    deleteCustomField: (state, action: PayloadAction<number>) => {
+      const customFieldID = action.payload;
+
+      state.customFields = state.customFields.filter(
+        (customField) => customField.id !== customFieldID
+      );
+
+      // Removing the custom field from each task
+      state.tasks = state.tasks.map((task) => {
+        if (!task.customFieldValues) return task;
+        if (!(customFieldID in task.customFieldValues)) return task;
+
+        // Creating a clone and deleting the custom field with matching key.
+        // We don't want to mutate the original object directly
+        const customFieldValuesClone = { ...task.customFieldValues };
+        delete customFieldValuesClone[customFieldID];
+
+        // If the clone is now empty, set the customFieldValues to undefined
+        // else set the customFieldValues to the clone.
+        const updatedTask = {
+          ...task,
+          customFieldValues:
+            Object.keys(customFieldValuesClone).length > 0
+              ? customFieldValuesClone
+              : undefined,
+        };
+
+        return updatedTask;
+      });
     },
   },
 });
@@ -207,5 +265,8 @@ export const {
   reOrderKanbanTasks,
   setTableFilter,
   setKanbanFilter,
+  createCustomField,
+  updateCustomField,
+  deleteCustomField,
 } = taskSlice.actions;
 export default historyReducer(taskSlice.reducer);

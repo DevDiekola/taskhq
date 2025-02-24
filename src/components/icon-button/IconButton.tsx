@@ -8,11 +8,9 @@ const IconButton = React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
     <button
       ref={ref}
       type="button"
-      // aria-label={ariaLabel}
-      // onClick={onClick}
       {...props}
       className={cn(
-        "rounded-md duration-200 ease-in-out cursor-pointer",
+        "rounded-md duration-300 ease-in-out cursor-pointer",
         props.className
       )}
     >

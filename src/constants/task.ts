@@ -4,6 +4,7 @@ import {
   Task,
   TaskGroupBy,
   TaskGroupClassNames,
+  CustomFieldType,
 } from "@/features/task/taskModel";
 import { PayloadAction } from "@reduxjs/toolkit";
 
@@ -12,9 +13,10 @@ export const GROUP_BY_PRIORITY: TaskGroupBy = "priority";
 
 export const TASK_SLICE_NAME = "task";
 
-export const TASK_LOCAL_STORAGE_KEY = "tasks";
+export const TASKS_LOCAL_STORAGE_KEY = "tasks";
 export const TABLE_VIEW_LOCAL_STORAGE_KEY = "table-view";
 export const KANBAN_VIEW_LOCAL_STORAGE_KEY = "kanban-view";
+export const CUSTOM_FIELDS_LOCAL_STORAGE_KEY = "custom-fields";
 
 export const TASK_STATUSES: ReadonlyArray<TaskStatus> = [
   "not_started",
@@ -27,6 +29,12 @@ export const TASK_PRIORITIES: ReadonlyArray<TaskPriority> = [
   "medium",
   "high",
   "urgent",
+];
+
+export const CUSTOM_FIELD_TYPES: ReadonlyArray<CustomFieldType> = [
+  "text",
+  "number",
+  "checkbox",
 ];
 
 export const TASK_GROUPS: ReadonlyArray<TaskGroupBy> = ["status", "priority"];
@@ -57,27 +65,27 @@ export const PRIORITY_CLASS_NAMES: Readonly<
   none: {
     background: "bg-gray-100",
     foreground: "text-gray-800",
-    border: "bg-gray-100",
+    border: "border-gray-100",
   },
   low: {
     background: "bg-green-100",
     foreground: "text-green-800",
-    border: "bg-green-100",
+    border: "border-green-100",
   },
   medium: {
     background: "bg-blue-100",
     foreground: "text-blue-800",
-    border: "bg-blue-100",
+    border: "border-blue-100",
   },
   high: {
     background: "bg-orange-100",
     foreground: "text-orange-800",
-    border: "bg-orange-100",
+    border: "border-orange-100",
   },
   urgent: {
     background: "bg-red-100",
     foreground: "text-red-800",
-    border: "bg-red-100",
+    border: "border-red-100",
   },
 };
 

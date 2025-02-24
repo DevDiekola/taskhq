@@ -11,7 +11,7 @@ import {
 import { MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toTitleCase } from "@/utils/string";
-import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-task-modal/CreateUpdateTaskModal";
+import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-update-task-modal/CreateUpdateTaskModal";
 import { useDispatch } from "react-redux";
 import {
   bulkDeleteTasks,
@@ -32,6 +32,7 @@ import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropd
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
 import { orderKanbanTask } from "@/utils/task";
 import { MotionDiv } from "@/components/icon-button/Motion";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 type Props = {
   group: KanbanTaskGroup;
@@ -40,6 +41,7 @@ type Props = {
 };
 
 const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
+  const { customFields } = useAppSelector((state) => state.taskState.present);
   const dispatch = useDispatch();
 
   const [isSaveTaskModalOpen, setIsSaveTaskModalOpen] = useState(false);
@@ -341,6 +343,7 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
           task={taskToUpdate}
           defaultStatus={createTaskStatus}
           defaultPriority={createTaskPriority}
+          customFields={customFields}
           onSubmit={handleTaskSubmit}
           onClose={handleSaveTaskModalClose}
         />

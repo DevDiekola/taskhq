@@ -69,6 +69,54 @@ export const filterTasks = (tasks: Task[], filter?: TaskFilter) => {
       filter.priorities?.includes(t.priority)
     );
   }
+  if (filter.customFieldValues) {
+    filteredTasks = filteredTasks.filter((t) => {
+      return Object.entries(filter.customFieldValues!).every(
+        ([fieldID, filterValue]) => {
+          const taskField = t.customFieldValues?.[Number(fieldID)];
+
+          const filterTextValue = filterValue.textValue?.trim();
+          const taskTextValue = taskField?.textValue?.trim();
+
+          if (filterTextValue) {
+            const queryWords = filterTextValue
+              .split(/\s+/)
+              .map((word) => word.toLowerCase());
+
+            if (
+              !taskTextValue ||
+              !queryWords.every((word) =>
+                taskTextValue.toLowerCase().includes(word)
+              )
+            ) {
+              return false;
+            }
+          }
+
+          if (
+            filterValue.numberValue !== undefined &&
+            taskField?.numberValue !== filterValue.numberValue
+          ) {
+            return false;
+          }
+
+          if (
+            filterValue.checkboxValue !== undefined &&
+            !(
+              filterValue.checkboxValue === false &&
+              taskField?.checkboxValue === undefined
+            ) &&
+            // If the checkboxValue is false, we want to consider tasks that don't have the checkboxValue set as valid
+            taskField?.checkboxValue !== filterValue.checkboxValue
+          ) {
+            return false;
+          }
+
+          return true;
+        }
+      );
+    });
+  }
 
   return filteredTasks;
 };
@@ -85,11 +133,49 @@ export const sortTasks = (
   const sortedTasks = [...tasks];
 
   sortedTasks.sort((a, b) => {
-    if (sortOrder === "asc") {
-      return a[sortColumn]! < b[sortColumn]! ? -1 : 1;
+    let valueA: string | number | boolean;
+    let valueB: string | number | boolean;
+
+    if (typeof sortColumn === "string") {
+      // Sort by built-in task properties (title, status, bla bla bla)
+      valueA = a[sortColumn]!;
+      valueB = b[sortColumn]!;
     } else {
-      return a[sortColumn]! > b[sortColumn]! ? -1 : 1;
+      // Sort by custom field (number keys)
+      const customFieldA = a.customFieldValues?.[sortColumn];
+      const customFieldB = b.customFieldValues?.[sortColumn];
+
+      if (
+        customFieldA?.numberValue !== undefined ||
+        customFieldB?.numberValue !== undefined
+      ) {
+        valueA = customFieldA?.numberValue ?? Number.NEGATIVE_INFINITY;
+        valueB = customFieldB?.numberValue ?? Number.NEGATIVE_INFINITY;
+      } else if (
+        customFieldA?.textValue !== undefined ||
+        customFieldB?.textValue !== undefined
+      ) {
+        valueA = customFieldA?.textValue?.toLowerCase() ?? "";
+        valueB = customFieldB?.textValue?.toLowerCase() ?? "";
+      } else if (
+        customFieldA?.checkboxValue !== undefined ||
+        customFieldB?.checkboxValue !== undefined
+      ) {
+        valueA = customFieldA?.checkboxValue ? 1 : 0;
+        valueB = customFieldB?.checkboxValue ? 1 : 0;
+      } else {
+        // We are considering undefined values as "zero" values.
+        // This way they will end up at the top or bottom of the list depending on the order.
+        // I think it makes more sense than not considering them at all (making them always at the bottom).
+        valueA = Number.NEGATIVE_INFINITY;
+        valueB = Number.NEGATIVE_INFINITY;
+      }
     }
+
+    if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+    if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+
+    return 0;
   });
 
   return sortedTasks;

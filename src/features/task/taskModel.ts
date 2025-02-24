@@ -18,6 +18,33 @@ export type Task = {
   title: string;
   status: TaskStatus;
   priority: TaskPriority;
+  customFieldValues?: Record<number, TaskCustomFieldValues>; // number key is custom field id
+};
+
+export type TaskCustomFieldValues = {
+  textValue?: string;
+  numberValue?: number;
+  checkboxValue?: boolean;
+};
+
+// export type CustomFieldValue = string | number | boolean;
+
+export type CustomFieldType = "text" | "number" | "checkbox";
+
+export type CustomFieldOptions = string[] | number[];
+
+export type CustomField = {
+  id: number;
+  name: string;
+  type: CustomFieldType;
+  options?: CustomFieldOptions;
+};
+
+export type CustomFieldPayload = {
+  id?: number;
+  name: string;
+  type: CustomFieldType;
+  options?: CustomFieldOptions;
 };
 
 export type TaskPayload = {
@@ -25,10 +52,12 @@ export type TaskPayload = {
   title: string;
   status: TaskStatus;
   priority: TaskPriority;
+  customFieldValues?: Record<number, TaskCustomFieldValues>; // number key is custom field id
 };
 
 export type TaskState = {
   tasks: Task[];
+  customFields: CustomField[];
   tableView: TableView;
   kanbanView: KanbanView;
 };
@@ -53,14 +82,14 @@ export type KanbanTaskGroup = {
   tasks: Task[];
 };
 
-export type TaskSortColumn = keyof Task;
+export type TaskSortColumn = "title" | "status" | "priority" | number; // number is id of custom field
 export type TaskSortOrder = "asc" | "desc";
 export type TaskGroupBy = "priority" | "status";
 
-export type TableView = TableViewSort & {
+export type TableView = {
   filter?: TaskFilter;
   groupBy?: TaskGroupBy;
-};
+} & TableViewSort;
 
 export type TableViewSort = {
   sortColumn?: TaskSortColumn;
@@ -91,4 +120,5 @@ export type TaskFilter = {
   title?: string;
   statuses?: TaskStatus[];
   priorities?: TaskPriority[];
+  customFieldValues?: Record<number, TaskCustomFieldValues>; // number key is custom field id
 };

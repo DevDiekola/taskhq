@@ -16,19 +16,24 @@ import {
   TaskSortColumn,
   TaskSortOrder,
   TableTaskGroup,
+  CustomField,
+  CustomFieldPayload,
 } from "@/features/task/taskModel";
 import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import Paginator from "../paginator/Paginator";
 import { useState } from "react";
 import { toTitleCase } from "@/utils/string";
-import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-task-modal/CreateUpdateTaskModal";
+import CreateUpdateTaskModal from "@/pages/my-tasks/components/create-update-task-modal/CreateUpdateTaskModal";
 import { useDispatch } from "react-redux";
 import {
   bulkDeleteTasks,
   bulkSetTaskPriority,
   bulkSetTaskStatus,
+  createCustomField,
   createTask,
+  deleteCustomField,
   setTableSort,
+  updateCustomField,
   updateTask,
 } from "@/features/task/taskSlice";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
@@ -46,6 +51,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import CreateUpdateCustomFieldModal from "../../../create-update-custom-field/CreateUpdateCustomFieldModal";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import DeleteCustomFieldModal from "../../../delete-custom-field-modal/DeleteCustomFieldModal";
 
 type Props = {
   group: TableTaskGroup;
@@ -64,6 +72,7 @@ const TaskGroupTable: React.FC<Props> = ({
   defaultCurrentPage = 1,
   defaultPageSize = 10,
 }) => {
+  const { customFields } = useAppSelector((state) => state.taskState.present);
   const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(defaultCurrentPage);
@@ -71,6 +80,12 @@ const TaskGroupTable: React.FC<Props> = ({
 
   const [isSaveTaskModalOpen, setIsSaveTaskModalOpen] = useState(false);
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
+
+  const [isSaveFieldModalOpen, setIsSaveFieldModalOpen] = useState(false);
+  const [isDeleteFieldModalOpen, setIsDeleteFieldModalOpen] = useState(false);
+
+  const [fieldToUpdate, setFieldToUpdate] = useState<CustomField>();
+  const [fieldToDelete, setFieldToDelete] = useState<CustomField>();
 
   const [createTaskStatus, setCreateTaskStatus] = useState<TaskStatus>();
   const [createTaskPriority, setCreateTaskPriority] = useState<TaskPriority>();
@@ -84,7 +99,7 @@ const TaskGroupTable: React.FC<Props> = ({
   const paginatedTasks = tasks.slice(startIndex, startIndex + pageSize);
 
   const handleSort = (newSortColumn: TaskSortColumn) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder = sortOrder === "desc" ? "asc" : "desc";
     const viewSort: TableViewSort = {
       sortColumn: newSortColumn,
       sortOrder: newSortOrder,
@@ -101,9 +116,23 @@ const TaskGroupTable: React.FC<Props> = ({
     setIsSaveTaskModalOpen(true);
   };
 
+  const handleCreateFieldModalOpen = () => {
+    setIsSaveFieldModalOpen(true);
+  };
+
   const handleUpdateTaskModalOpen = (task: Task) => {
     setTaskToUpdate(task);
     setIsSaveTaskModalOpen(true);
+  };
+
+  const handleUpdateFieldModalOpen = (customField: CustomField) => {
+    setFieldToUpdate(customField);
+    setIsSaveFieldModalOpen(true);
+  };
+
+  const handleDeleteFieldModalOpen = (customField: CustomField) => {
+    setFieldToDelete(customField);
+    setIsDeleteFieldModalOpen(true);
   };
 
   const handleTaskSubmit = (taskPayload: TaskPayload) => {
@@ -119,11 +148,27 @@ const TaskGroupTable: React.FC<Props> = ({
     }
   };
 
+  const handleSaveFieldSubmit = (customFieldPayload: CustomFieldPayload) => {
+    setIsSaveFieldModalOpen(false);
+    setFieldToUpdate(undefined);
+
+    if (customFieldPayload.id) {
+      dispatch(updateCustomField(customFieldPayload));
+    } else {
+      dispatch(createCustomField(customFieldPayload));
+    }
+  };
+
   const handleSaveTaskModalClose = () => {
     setIsSaveTaskModalOpen(false);
     setTaskToUpdate(undefined);
     setCreateTaskStatus(undefined);
     setCreateTaskPriority(undefined);
+  };
+
+  const handleSaveFieldModalClose = () => {
+    setIsSaveFieldModalOpen(false);
+    setFieldToUpdate(undefined);
   };
 
   const handleDuplicateTask = (task: Task) => {
@@ -147,6 +192,36 @@ const TaskGroupTable: React.FC<Props> = ({
 
     toast({
       title: "Task(s) deleted successfully",
+      description:
+        "Having second thoughts? Click 'Undo' or press CTRL + Z (CMD + Z) to undo",
+      action: (
+        <ToastAction
+          onClick={() => dispatch(UNDO_TASK_ACTION)}
+          altText="Undo task delete"
+        >
+          Undo
+        </ToastAction>
+      ),
+    });
+  };
+
+  // const handleShowDeleteFieldModal = (customField: CustomField) => {
+  //   setFieldToDelete(customField);
+  //   setIsDeleteFieldModalOpen(true);
+  // };
+
+  const handleDeleteFieldModalClose = () => {
+    setFieldToDelete(undefined);
+    setIsDeleteFieldModalOpen(false);
+  };
+
+  const handleDeleteField = (customFieldID: number) => {
+    dispatch(deleteCustomField(customFieldID));
+    setFieldToDelete(undefined);
+    setIsDeleteFieldModalOpen(false);
+
+    toast({
+      title: "Custom field deleted successfully",
       description:
         "Having second thoughts? Click 'Undo' or press CTRL + Z (CMD + Z) to undo",
       action: (
@@ -247,28 +322,49 @@ const TaskGroupTable: React.FC<Props> = ({
               />
             </TableHead>
             <TaskTableHead
-              column="title"
+              columnID="title"
+              columnName="Title"
               sortColumn={sortColumn}
               sortOrder={sortOrder}
-              onClick={() => handleSort("title")}
+              onSortClick={handleSort}
             />
             {groupBy !== "status" && (
               <TaskTableHead
-                column="status"
+                columnID="status"
+                columnName="Status"
                 sortColumn={sortColumn}
                 sortOrder={sortOrder}
-                onClick={() => handleSort("status")}
+                onSortClick={handleSort}
               />
             )}
             {groupBy !== "priority" && (
               <TaskTableHead
-                column="priority"
+                columnID="priority"
+                columnName="Priority"
                 sortColumn={sortColumn}
                 sortOrder={sortOrder}
-                onClick={() => handleSort("priority")}
+                onSortClick={handleSort}
               />
             )}
-            <TableHead>Actions</TableHead>
+            {customFields.map((field) => (
+              <TaskTableHead
+                key={field.id}
+                columnID={field.id}
+                columnName={field.name}
+                customField={field}
+                sortColumn={sortColumn}
+                sortOrder={sortOrder}
+                onSortClick={handleSort}
+                onEditClick={handleUpdateFieldModalOpen}
+                onDeleteClick={handleDeleteFieldModalOpen}
+              />
+            ))}
+            <TableHead>
+              <Button onClick={handleCreateFieldModalOpen} variant="ghost">
+                <span>Add Field</span>
+                <PlusIcon size={18} />
+              </Button>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -277,6 +373,7 @@ const TaskGroupTable: React.FC<Props> = ({
               key={task.id}
               task={task}
               groupBy={groupBy}
+              customFields={customFields}
               isChecked={bulkActionTaskIDs.includes(task.id)}
               onCheckedChange={() => handleToggleTaskSelection(task.id)}
               onEdit={handleUpdateTaskModalOpen}
@@ -305,6 +402,7 @@ const TaskGroupTable: React.FC<Props> = ({
           task={taskToUpdate}
           defaultStatus={createTaskStatus}
           defaultPriority={createTaskPriority}
+          customFields={customFields}
           onSubmit={handleTaskSubmit}
           onClose={handleSaveTaskModalClose}
         />
@@ -315,6 +413,22 @@ const TaskGroupTable: React.FC<Props> = ({
           taskIDs={bulkActionTaskIDs}
           onDelete={handleDeleteTasks}
           onClose={handleDeleteTaskModalClose}
+        />
+      )}
+      {isSaveFieldModalOpen && (
+        <CreateUpdateCustomFieldModal
+          isOpen={isSaveFieldModalOpen}
+          customField={fieldToUpdate}
+          onSubmit={handleSaveFieldSubmit}
+          onClose={handleSaveFieldModalClose}
+        />
+      )}
+      {isDeleteFieldModalOpen && (
+        <DeleteCustomFieldModal
+          isOpen={isDeleteFieldModalOpen}
+          customField={fieldToDelete!}
+          onDelete={handleDeleteField}
+          onClose={handleDeleteFieldModalClose}
         />
       )}
     </div>

@@ -18,7 +18,9 @@ export const getInitials = (str: string) => {
 
 export const toTitleCase = (str: string) => {
   return str
-    .split("_")
+    .replace(/_/g, " ")
+    .replace(/-/g, " ")
+    .split(" ")
     .map((word) => capitalize(word))
     .join(" ");
 };

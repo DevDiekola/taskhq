@@ -1,4 +1,6 @@
+import NumberInput from "@/components/number-input/NumberInput";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,9 +15,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/task";
-import { TaskPriority, TaskStatus, ViewID } from "@/features/task/taskModel";
+import {
+  CustomField,
+  KanbanView,
+  TableView,
+  TaskCustomFieldValues,
+  TaskPriority,
+  TaskStatus,
+  ViewID,
+} from "@/features/task/taskModel";
 import { setKanbanFilter, setTableFilter } from "@/features/task/taskSlice";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { toTitleCase } from "@/utils/string";
 import { getFilterCount } from "@/utils/task";
 import { ChevronDown, FilterIcon } from "lucide-react";
@@ -24,12 +33,16 @@ import { useDispatch } from "react-redux";
 
 type Props = {
   viewID: ViewID;
+  tableView: TableView;
+  kanbanView: KanbanView;
+  customFields: CustomField[];
 };
-const FilterDropdown: React.FC<Props> = ({ viewID }) => {
-  const { tableView, kanbanView } = useAppSelector(
-    (state) => state.taskState.present
-  );
-
+const FilterDropdown: React.FC<Props> = ({
+  viewID,
+  tableView,
+  kanbanView,
+  customFields,
+}) => {
   const dispatch = useDispatch();
 
   const { filter } = viewID === "table" ? tableView : kanbanView;
@@ -66,6 +79,26 @@ const FilterDropdown: React.FC<Props> = ({ viewID }) => {
     dispatch(setFilter({ ...filter, priorities }));
   };
 
+  const handleFilterByCustomValue = (
+    customFieldID: number,
+    key: keyof TaskCustomFieldValues,
+    value: string | number | boolean | undefined
+  ) => {
+    const updatedFilter = {
+      ...filter,
+      customFieldValues: {
+        ...filter?.customFieldValues,
+        [customFieldID]: { [key]: value },
+      },
+    };
+
+    dispatch(setFilter(updatedFilter));
+  };
+
+  const handleResetAll = () => {
+    dispatch(setFilter(undefined));
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -80,15 +113,24 @@ const FilterDropdown: React.FC<Props> = ({ viewID }) => {
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="min-w-80">
-        <Label>Task title</Label>
-        <Input
-          defaultValue={filter?.title}
-          onChange={(e) => handleFilterByTitle(e.target.value)}
-          placeholder="Enter task title"
-          className="mt-3"
-        />
-        <div className="flex gap-5 mt-5">
+      <PopoverContent className="min-w-80 flex flex-col gap-4">
+        <Button
+          onClick={handleResetAll}
+          variant="secondary"
+          className="inline-flex"
+        >
+          Reset all
+        </Button>
+        <div>
+          <Label>Task title</Label>
+          <Input
+            defaultValue={filter?.title}
+            onChange={(e) => handleFilterByTitle(e.target.value)}
+            placeholder="Enter task title"
+            className="mt-3"
+          />
+        </div>
+        <div className="flex gap-5">
           <div className="flex-1">
             <Label>Status</Label>
             <DropdownMenu>
@@ -109,6 +151,11 @@ const FilterDropdown: React.FC<Props> = ({ viewID }) => {
                     onCheckedChange={(checked) =>
                       handleFilterByStatus(status, checked)
                     }
+                    onSelect={(e) => {
+                      // Doing this to prevent the dropdown menu from closing automatically
+                      // since it's a multi-select dropdown. It's a little frustrating to have to open it everytime I want to select an option
+                      e.preventDefault();
+                    }}
                   >
                     {toTitleCase(status)}
                   </DropdownMenuCheckboxItem>
@@ -136,6 +183,11 @@ const FilterDropdown: React.FC<Props> = ({ viewID }) => {
                     onCheckedChange={(checked) =>
                       handleFilterByPriority(priority, checked)
                     }
+                    onSelect={(e) => {
+                      // Again, doing this to prevent the dropdown menu from closing automatically
+                      // since it's a multi-select dropdown.
+                      e.preventDefault();
+                    }}
                   >
                     {toTitleCase(priority)}
                   </DropdownMenuCheckboxItem>
@@ -143,6 +195,65 @@ const FilterDropdown: React.FC<Props> = ({ viewID }) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </div>
+        <div className="flex flex-col gap-5 mt-3">
+          {customFields.length > 0 && <Label>Custom Fields</Label>}
+          {customFields.map((customField) => (
+            <div
+              key={customField.id}
+              className={
+                customField.type === "checkbox" ? "flex items-center gap-5" : ""
+              }
+            >
+              <Label className="block">{customField.name}</Label>
+              {customField.type === "text" && (
+                <Input
+                  className="mt-4"
+                  placeholder={`Enter ${customField.name}`}
+                  value={
+                    filter?.customFieldValues?.[customField.id]?.textValue ?? ""
+                  }
+                  onChange={(e) =>
+                    handleFilterByCustomValue(
+                      customField.id,
+                      "textValue",
+                      e.target.value
+                    )
+                  }
+                />
+              )}
+              {customField.type === "number" && (
+                <NumberInput
+                  className="mt-4"
+                  placeholder={`Enter ${customField.name}`}
+                  value={
+                    filter?.customFieldValues?.[customField.id]?.numberValue
+                  }
+                  onNumberChange={(number) => {
+                    handleFilterByCustomValue(
+                      customField.id,
+                      "numberValue",
+                      number
+                    );
+                  }}
+                />
+              )}
+              {customField.type === "checkbox" && (
+                <Checkbox
+                  checked={
+                    !!filter?.customFieldValues?.[customField.id]?.checkboxValue
+                  }
+                  onCheckedChange={(checked) =>
+                    handleFilterByCustomValue(
+                      customField.id,
+                      "checkboxValue",
+                      checked === true
+                    )
+                  }
+                />
+              )}
+            </div>
+          ))}
         </div>
       </PopoverContent>
     </Popover>

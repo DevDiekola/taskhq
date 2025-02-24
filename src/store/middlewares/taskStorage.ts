@@ -1,9 +1,10 @@
 import { Action, Middleware, PayloadAction } from "@reduxjs/toolkit";
 import {
-  TASK_LOCAL_STORAGE_KEY,
+  TASKS_LOCAL_STORAGE_KEY,
   TABLE_VIEW_LOCAL_STORAGE_KEY,
   KANBAN_VIEW_LOCAL_STORAGE_KEY,
   TASK_SLICE_NAME,
+  CUSTOM_FIELDS_LOCAL_STORAGE_KEY,
 } from "@/constants/task";
 import { RootState } from "../reducers/root";
 
@@ -21,7 +22,7 @@ const taskStorageMiddleware: Middleware<object, RootState> =
     const state = storeAPI.getState();
 
     localStorage.setItem(
-      TASK_LOCAL_STORAGE_KEY,
+      TASKS_LOCAL_STORAGE_KEY,
       JSON.stringify(state.taskState.present.tasks)
     );
     localStorage.setItem(
@@ -31,6 +32,10 @@ const taskStorageMiddleware: Middleware<object, RootState> =
     localStorage.setItem(
       KANBAN_VIEW_LOCAL_STORAGE_KEY,
       JSON.stringify(state.taskState.present.kanbanView)
+    );
+    localStorage.setItem(
+      CUSTOM_FIELDS_LOCAL_STORAGE_KEY,
+      JSON.stringify(state.taskState.present.customFields)
     );
 
     return result;

@@ -7,16 +7,15 @@ import {
 import { TASK_GROUPS } from "@/constants/task";
 import { TaskGroupBy } from "@/features/task/taskModel";
 import { setTableGroupBy } from "@/features/task/taskSlice";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { toTitleCase } from "@/utils/string";
 import { GridIcon } from "lucide-react";
 import { useDispatch } from "react-redux";
 
-const TableGroupByDropdown = () => {
-  const {
-    tableView: { groupBy },
-  } = useAppSelector((state) => state.taskState.present);
+type Props = {
+  groupBy?: TaskGroupBy;
+};
 
+const TableGroupByDropdown: React.FC<Props> = ({ groupBy }) => {
   const dispatch = useDispatch();
 
   const handleSetGroupBy = (groupBy: TaskGroupBy, checked: boolean) => {

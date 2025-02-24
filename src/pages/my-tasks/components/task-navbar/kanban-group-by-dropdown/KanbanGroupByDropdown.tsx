@@ -8,16 +8,14 @@ import {
 import { TASK_GROUPS } from "@/constants/task";
 import { TaskGroupBy } from "@/features/task/taskModel";
 import { setKanbanGroupBy } from "@/features/task/taskSlice";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { toTitleCase } from "@/utils/string";
 import { GridIcon } from "lucide-react";
 import { useDispatch } from "react-redux";
 
-const KanbanGroupByDropdown = () => {
-  const {
-    kanbanView: { groupBy },
-  } = useAppSelector((state) => state.taskState.present);
-
+export type Props = {
+  groupBy: TaskGroupBy;
+};
+const KanbanGroupByDropdown: React.FC<Props> = ({ groupBy }) => {
   const dispatch = useDispatch();
 
   const handleSetGroupBy = (groupBy: TaskGroupBy) => {

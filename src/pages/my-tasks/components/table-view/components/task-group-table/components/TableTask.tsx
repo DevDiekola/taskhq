@@ -2,7 +2,7 @@ import IconButton from "@/components/icon-button/IconButton";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
-import { Task, TaskGroupBy } from "@/features/task/taskModel";
+import { CustomField, Task, TaskGroupBy } from "@/features/task/taskModel";
 import { cn } from "@/lib/utils";
 import TaskActionsDropdown from "@/pages/my-tasks/components/task-actions-dropdown/TaskActionsDropdown";
 import { toTitleCase } from "@/utils/string";
@@ -13,6 +13,7 @@ type Props = {
   task: Task;
   groupBy?: TaskGroupBy;
   isChecked: boolean;
+  customFields: CustomField[];
   onCheckedChange: (checked: boolean) => void;
   onEdit: (task: Task) => void;
   onDuplicate: (task: Task) => void;
@@ -23,16 +24,41 @@ const TableTask: React.FC<Props> = ({
   task,
   groupBy,
   isChecked,
+  customFields,
   onCheckedChange,
   onEdit,
   onDuplicate,
   onDelete,
+  ...props
 }) => {
   const statusClassNames = getStatusClassNames(task.status);
   const priorityClassNames = getPriorityClassNames(task.priority);
 
+  const renderCustomFieldValue = (field: CustomField, task: Task) => {
+    if (field.type === "text") {
+      return task.customFieldValues?.[field.id]
+        ? task.customFieldValues?.[field.id].textValue
+        : "-";
+    }
+    if (field.type === "number") {
+      return task.customFieldValues?.[field.id]
+        ? task.customFieldValues?.[field.id].numberValue
+        : "-";
+    }
+    if (field.type === "checkbox") {
+      return task.customFieldValues?.[field.id] ? (
+        <Checkbox
+          checked={task.customFieldValues?.[field.id].checkboxValue || false}
+        />
+      ) : (
+        "-"
+      );
+    }
+    return "-";
+  };
+
   return (
-    <TableRow key={task.id} className="cursor-pointer">
+    <TableRow key={task.id} {...props}>
       <TableCell>
         <Checkbox checked={isChecked} onCheckedChange={onCheckedChange} />
       </TableCell>
@@ -57,6 +83,11 @@ const TableTask: React.FC<Props> = ({
           </Badge>
         </TableCell>
       )}
+      {customFields.map((field) => (
+        <TableCell key={field.id} className="font-medium">
+          {renderCustomFieldValue(field, task)}
+        </TableCell>
+      ))}
       <TableCell>
         <TaskActionsDropdown
           task={task}
