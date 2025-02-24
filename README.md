@@ -24,6 +24,7 @@
 ## Extra Features
 - **Task grouping** - Dynamically group tasks based on status or priority for both table and kanban views
 - **Seed tasks** - Populate app with specific amount of test data.
+- **Dynamic theme (light/dark mode)** - One click light/dark mode switch.
 - **Nice looking favicon** - Made a custom favicon I'm proud of, lol.
 
 
