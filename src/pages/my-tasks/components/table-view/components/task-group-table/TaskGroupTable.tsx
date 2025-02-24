@@ -37,13 +37,13 @@ import {
   updateTask,
 } from "@/features/task/taskSlice";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
-import TaskTableHead from "./components/TaskTableHead";
+import TaskTableHead from "./components/table-task-head/TaskTableHead";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UNDO_TASK_ACTION } from "@/constants/task";
-import TableTask from "./components/TableTask";
+import TableTask from "./components/table-task/TableTask";
 import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropdown";
 import {
   Tooltip,
@@ -377,6 +377,7 @@ const TaskGroupTable: React.FC<Props> = ({
               isChecked={bulkActionTaskIDs.includes(task.id)}
               onCheckedChange={() => handleToggleTaskSelection(task.id)}
               onEdit={handleUpdateTaskModalOpen}
+              onUpdate={handleTaskSubmit}
               onDuplicate={handleDuplicateTask}
               onDelete={handleShowDeleteTaskModal}
             />

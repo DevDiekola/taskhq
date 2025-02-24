@@ -27,11 +27,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UNDO_TASK_ACTION } from "@/constants/task";
 import { ReactSortable } from "react-sortablejs";
-import KanbanTask from "./components/KanbanTask";
+import KanbanTask from "./components/kanban-task/KanbanTask";
 import BulkActionsDropdown from "../../../bulk-actions-dropdown/BulkActionsDropdown";
 import DeleteTaskModal from "../../../delete-task-modal/DeleteTaskModal";
 import { orderKanbanTask } from "@/utils/task";
-import { MotionDiv } from "@/components/icon-button/Motion";
+import { MotionDiv } from "@/components/motion/Motion";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 type Props = {
@@ -256,7 +256,6 @@ const TaskGroupKanban: React.FC<Props> = ({ group, groupBy, order }) => {
             );
 
             if (lastAddedTaskIDs.length > 0) {
-              console.log("lastAddedTaskIDs", lastAddedTaskIDs);
               setLastAddedTaskID(lastAddedTaskIDs[0]);
             }
 

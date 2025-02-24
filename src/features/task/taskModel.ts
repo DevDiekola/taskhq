@@ -27,8 +27,6 @@ export type TaskCustomFieldValues = {
   checkboxValue?: boolean;
 };
 
-// export type CustomFieldValue = string | number | boolean;
-
 export type CustomFieldType = "text" | "number" | "checkbox";
 
 export type CustomFieldOptions = string[] | number[];
@@ -81,6 +79,8 @@ export type KanbanTaskGroup = {
   name: KanbanTaskGroupName;
   tasks: Task[];
 };
+
+export type TaskEdittableColumn = "title" | "status" | "priority" | number; // number is id of custom field
 
 export type TaskSortColumn = "title" | "status" | "priority" | number; // number is id of custom field
 export type TaskSortOrder = "asc" | "desc";

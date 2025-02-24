@@ -40,7 +40,7 @@ const TaskTableHead: React.FC<Prop> = ({
         onClick={() => !customField && onSortClick(columnID)}
         className="flex justify-between items-center cursor-pointer"
       >
-        <span>{toTitleCase(columnName)}</span>
+        <span className="whitespace-nowrap">{toTitleCase(columnName)}</span>
         <div className="flex gap-4">
           {customField && (
             <>

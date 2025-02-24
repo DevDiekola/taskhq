@@ -106,7 +106,7 @@ export const filterTasks = (tasks: Task[], filter?: TaskFilter) => {
               filterValue.checkboxValue === false &&
               taskField?.checkboxValue === undefined
             ) &&
-            // If the checkboxValue is false, we want to consider tasks that don't have the checkboxValue set as valid
+            // If the checkboxValue is false, we want to consider tasks that have undefined checkboxValue set as valid
             taskField?.checkboxValue !== filterValue.checkboxValue
           ) {
             return false;

@@ -205,7 +205,10 @@ const FilterDropdown: React.FC<Props> = ({
                 customField.type === "checkbox" ? "flex items-center gap-5" : ""
               }
             >
-              <Label className="block">{customField.name}</Label>
+              <Label className="block">
+                {customField.name}{" "}
+                {customField.type === "number" && "(Equality)"}
+              </Label>
               {customField.type === "text" && (
                 <Input
                   className="mt-4"
