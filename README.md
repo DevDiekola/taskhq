@@ -24,13 +24,14 @@
 ## Extra Features
 - **Task grouping** - Dynamically group tasks based on status or priority for both table and kanban views
 - **Seed tasks** - Populate app with specific amount of test data.
+- **Nice looking favicon** - Made a custom favicon I'm proud of, lol.
 
 
-## 📦 Tech Stack  
+## Tech Stack  
 
-- 🏗 **React (Vite)** – Fast and optimized frontend framework.  
-- 🔄 **Redux Toolkit** – Manages global state efficiently.  
-- 🎨 **Tailwind CSS** – Provides a sleek and consistent design.  
+- **React (Vite)** – Fast and optimized frontend framework.  
+- **Redux Toolkit** – Manages global state efficiently.  
+- **Tailwind CSS** – Provides a sleek and consistent design.  
 
 ## 🛠️ Installation & Setup  
 
