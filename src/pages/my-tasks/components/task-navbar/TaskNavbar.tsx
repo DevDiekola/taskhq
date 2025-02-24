@@ -37,6 +37,7 @@ import TableGroupByDropdown from "./table-group-by-dropdown/TableGroupByDropdown
 import KanbanGroupByDropdown from "./kanban-group-by-dropdown/KanbanGroupByDropdown";
 import { ThemeToggle } from "./components/theme-toggle/ThemeToggle";
 import FilterDropdown from "./table-filter-dropdown/FilterDropdown";
+import { toast } from "@/hooks/use-toast";
 
 const TaskNavbar = () => {
   const { search } = useLocation();
@@ -85,6 +86,20 @@ const TaskNavbar = () => {
       return;
     }
     dispatch(seedTasks(count));
+  };
+
+  const handleUndo = () => {
+    dispatch(UNDO_TASK_ACTION);
+    toast({
+      title: "Undo successful",
+    });
+  };
+
+  const handleRedo = () => {
+    dispatch(REDO_TASK_ACTION);
+    toast({
+      title: "Redo successful",
+    });
   };
 
   return (
@@ -143,9 +158,11 @@ const TaskNavbar = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild disabled={pastState.length === 0}>
-                  <IconButton aria-label="Undo last action">
+                  <IconButton
+                    onClick={handleUndo}
+                    aria-label="Undo last action"
+                  >
                     <RotateCcwIcon
-                      onClick={() => dispatch(UNDO_TASK_ACTION)}
                       size={20}
                       className={cn(
                         "cursor-pointer",
@@ -162,9 +179,11 @@ const TaskNavbar = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild disabled={futureState.length === 0}>
-                  <IconButton aria-label="Redo last action">
+                  <IconButton
+                    onClick={handleRedo}
+                    aria-label="Redo last action"
+                  >
                     <RotateCwIcon
-                      onClick={() => dispatch(REDO_TASK_ACTION)}
                       size={20}
                       className={cn(
                         "cursor-pointer",
@@ -201,14 +220,14 @@ const TaskNavbar = () => {
             <DropdownMenuContent className="min-w-52">
               <DropdownMenuItem
                 disabled={pastState.length === 0}
-                onClick={() => dispatch(UNDO_TASK_ACTION)}
+                onClick={handleUndo}
               >
                 <RotateCcwIcon size={17} />
                 <span>Undo last action</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={futureState.length === 0}
-                onClick={() => dispatch(REDO_TASK_ACTION)}
+                onClick={handleRedo}
               >
                 <RotateCwIcon size={17} />
                 <span>Redo last action</span>
