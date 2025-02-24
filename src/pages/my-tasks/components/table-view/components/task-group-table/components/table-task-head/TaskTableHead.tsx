@@ -46,14 +46,14 @@ const TaskTableHead: React.FC<Prop> = ({
             <>
               <IconButton
                 onClick={() => onDeleteClick?.(customField)}
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 hover:dark:text-gray-200"
                 aria-label={`Delete custom field - ${columnName}`}
               >
                 <Trash2Icon size={18} />
               </IconButton>
               <IconButton
                 onClick={() => onEditClick?.(customField)}
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 hover:dark:text-gray-200"
                 aria-label={`Edit custom field - ${columnName}`}
               >
                 <EditIcon size={18} />
@@ -63,31 +63,23 @@ const TaskTableHead: React.FC<Prop> = ({
           {sortColumn === columnID && sortOrder === "desc" ? (
             <IconButton
               onClick={() => onSortClick(columnID)}
-              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 hover:dark:text-gray-200"
               aria-label={`Sort by ${columnName} in ascending order`}
             >
               <LucideArrowUpZA
                 size={18}
-                className={
-                  sortColumn === columnID
-                    ? "text-gray-700 dark:text-gray-200"
-                    : "text-gray-200 dark:text-gray-700"
-                }
+                className={sortColumn === columnID ? "text-primary" : ""}
               />
             </IconButton>
           ) : (
             <IconButton
               onClick={() => onSortClick(columnID)}
-              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 hover:dark:text-gray-200"
               aria-label={`Sort by ${columnName} in ascending order`}
             >
               <LucideArrowDownAZ
                 size={18}
-                className={
-                  sortColumn === columnID
-                    ? "text-gray-700 dark:text-gray-200"
-                    : "text-gray-200 dark:text-gray-700"
-                }
+                className={sortColumn === columnID ? "text-primary" : ""}
               />
             </IconButton>
           )}
