@@ -1,50 +1,40 @@
-# React + TypeScript + Vite
+# TaskHQ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Task Management Project  
 
-Currently, two official plugins are available:
+## Milestones/Features  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Task Management** – CRUD.  
+- **Managing Tasks** – Modal for creating and editing, inline diting is also supported.  
+- **Filtering and sorting** – Tasks can be sorted directly from the table head. dedicated filter dropdown also provided.
+- **Pagination** - Table pagination
+- **Local Persistence** - All updates are saved to local storage
+- **Custom Fields Support** – Support for the following custom field types:  
+  - **Text**  
+  - **Number**  
+  - **Checkbox**
+  Including a modal to manage them
 
-## Expanding the ESLint configuration
+## Bonus Milestones
+- **Animations**
+- **Undo/Redo functionality** – Dedicated icon buttons for undo/redo. CTRL + Z (CMD + Z) | CTRL + Y (CMD + SHIFT + Z) also supported
+- **Multi-seleect for bulk actions**
+- **Kanban view**
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Extra Features
+- **Task grouping** - Dynamically group tasks based on status or priority for both table and kanban views
+- **Seed tasks** - Populate app with specific amount of test data.
 
-- Configure the top-level `parserOptions` property like this:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 📦 Tech Stack  
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- 🏗 **React (Vite)** – Fast and optimized frontend framework.  
+- 🔄 **Redux Toolkit** – Manages global state efficiently.  
+- 🎨 **Tailwind CSS** – Provides a sleek and consistent design.  
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## 🛠️ Installation & Setup  
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+1. **Clone the repository:**  
+   ```sh
+   git clone <repo-url>
+   cd <project-folder>
