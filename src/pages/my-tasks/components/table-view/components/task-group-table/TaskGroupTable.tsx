@@ -205,11 +205,6 @@ const TaskGroupTable: React.FC<Props> = ({
     });
   };
 
-  // const handleShowDeleteFieldModal = (customField: CustomField) => {
-  //   setFieldToDelete(customField);
-  //   setIsDeleteFieldModalOpen(true);
-  // };
-
   const handleDeleteFieldModalClose = () => {
     setFieldToDelete(undefined);
     setIsDeleteFieldModalOpen(false);

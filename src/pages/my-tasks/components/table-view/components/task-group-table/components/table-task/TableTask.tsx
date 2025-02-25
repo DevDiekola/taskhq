@@ -53,27 +53,6 @@ const TableTask: React.FC<Props> = ({
   const statusClassNames = getStatusClassNames(task.status);
   const priorityClassNames = getPriorityClassNames(task.priority);
 
-  // const renderCustomFieldValue = (field: CustomField, task: Task) => {
-  //   if (field.type === "text") {
-  //     return task.customFieldValues?.[field.id]
-  //       ? task.customFieldValues?.[field.id].textValue
-  //       : "-";
-  //   }
-  //   if (field.type === "number") {
-  //     return task.customFieldValues?.[field.id]
-  //       ? task.customFieldValues?.[field.id].numberValue
-  //       : "-";
-  //   }
-  //   if (field.type === "checkbox") {
-  //     return (
-  //       <Checkbox
-  //         checked={task.customFieldValues?.[field.id]?.checkboxValue || false}
-  //       />
-  //     );
-  //   }
-  //   return "-";
-  // };
-
   return (
     <TableRow className="cursor-pointer" key={task.id} {...props}>
       <TableCell>
