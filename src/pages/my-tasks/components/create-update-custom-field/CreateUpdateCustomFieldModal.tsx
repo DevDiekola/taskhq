@@ -35,16 +35,10 @@ import {
 } from "@/features/task/taskModel";
 import { CUSTOM_FIELD_TYPES } from "@/constants/task";
 
-const customFieldSchema = z.object({
-  name: z.string().min(1).max(50),
-  type: z.string().min(1),
-});
-
-type CustomFieldSchema = z.infer<typeof customFieldSchema>;
-
 type Props = {
   isOpen: boolean;
   customField?: CustomField;
+  existingCustomFields: CustomField[];
   onSubmit: (customFieldPayload: CustomFieldPayload) => void;
   onClose: () => void;
 };
@@ -52,9 +46,27 @@ type Props = {
 const CreateUpdateCustomFieldModal: React.FC<Props> = ({
   isOpen,
   customField,
+  existingCustomFields,
   onSubmit,
   onClose,
 }) => {
+  const customFieldSchema = z.object({
+    name: z
+      .string()
+      .min(1)
+      .max(50)
+      .refine(
+        (name) =>
+          !existingCustomFields.some(
+            (field) => field.name.toLowerCase() === name.toLowerCase()
+          ),
+        { message: "A custom field with this name already exists" }
+      ),
+    type: z.string().min(1),
+  });
+
+  type CustomFieldSchema = z.infer<typeof customFieldSchema>;
+
   const form = useForm<CustomFieldSchema>({
     resolver: zodResolver(customFieldSchema),
     defaultValues: {

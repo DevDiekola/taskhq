@@ -420,6 +420,7 @@ const TaskGroupTable: React.FC<Props> = ({
         <CreateUpdateCustomFieldModal
           isOpen={isSaveFieldModalOpen}
           customField={fieldToUpdate}
+          existingCustomFields={customFields}
           onSubmit={handleSaveFieldSubmit}
           onClose={handleSaveFieldModalClose}
         />
