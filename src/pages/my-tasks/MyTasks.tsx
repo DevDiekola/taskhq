@@ -1,10 +1,10 @@
 import { JSX } from "react";
 import { useLocation } from "react-router-dom";
-import { ViewID } from "./components/task-navbar/models/navbarModel";
 import TableView from "./components/table-view/TableView";
 import KanbanView from "./components/kanban-view/KanbanView";
 import useUndoRedoShortcut from "@/hooks/useUndoRedoShortcut";
 import TaskNavbar from "./components/task-navbar/TaskNavbar";
+import { ViewID } from "@/features/task/taskModel";
 
 const MyTasks = () => {
   const { search } = useLocation();
