@@ -6,6 +6,11 @@ const initialState: ThemeState = {
   theme: (localStorage.getItem(THEME_LOCAL_STORAGE_KEY) as Theme) || "dark",
 };
 
+document.documentElement.classList.toggle(
+  "dark",
+  initialState.theme === "dark"
+);
+
 const themeSlice = createSlice({
   name: THEME_SLICE_NAME,
   initialState,
