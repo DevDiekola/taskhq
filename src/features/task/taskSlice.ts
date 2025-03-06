@@ -92,6 +92,7 @@ const taskSlice = createSlice({
     seedTasks: (state, action: PayloadAction<number>) => {
       // Only seeding the specified amount of tasks
       state.tasks = MOCK_TASKS.slice(0, action.payload);
+      state.kanbanView.order = undefined;
     },
     createTask: (state, action: PayloadAction<TaskPayload>) => {
       // Getting the highest task ID plus one
@@ -101,7 +102,7 @@ const taskSlice = createSlice({
         1;
       const task: Task = { ...action.payload, id };
 
-      state.tasks.push(task);
+      state.tasks.unshift(task);
     },
     updateTask: (state, action: PayloadAction<TaskPayload>) => {
       const index = state.tasks.findIndex(
